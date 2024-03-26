@@ -1,0 +1,56 @@
+#!/bin/bash
+
+[ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
+
+username="$(id -nu 1000)"
+
+set -euf -o pipefail
+
+############################	set our variables	############################
+
+fedora_releases_url="https://torrent.fedoraproject.org"
+iso_download_folder="/home/${username}/ISO"
+
+############################	get release versions	############################
+
+fedora_iso_name=$(curl -sL "$fedora_releases_url" | grep '".*Fedora-Workstation-Live-x86_64.*"' | sort -Vr | grep -iFv -e beta -e alpha -e rc | head -n 1 | grep -o '".*"' | tr -d '"' | sed 's|.*/||' | sed 's|\..*||')
+fedora_iso_url=$(curl -sL "$fedora_releases_url" | grep '".*Fedora-Workstation-Live-x86_64.*"' | sort -Vr | grep -iFv -e beta -e alpha -e rc | head -n 1 | grep -o '".*"' | tr -d '"')
+
+
+############################	define our functions	############################
+
+get_iso () {
+if hash aria2c 2>/dev/null; then
+	: ;
+else
+	 dnf install -y aria2 ;
+fi
+
+# test for existing current iso
+	if [ -f "$iso_download_folder/${fedora_iso_name}.iso" ]
+	then
+		exit
+	else
+		set +euf +o pipefail
+		rm -rf \
+		${iso_download_folder}/Fedora--*.iso
+		set -euf -o pipefail
+	fi
+aria2c \
+	--seed-time 0 \
+	--allow-overwrite=true \
+	--follow-torrent mem \
+	--file-allocation none \
+	--dir /tmp \
+	"${fedora_iso_url}"
+
+find	"/tmp/${fedora_iso_name}" \
+	-name "*.iso" \
+	-execdir chmod 0644 {} \; \
+	-execdir chown qemu:qemu {} \; \
+	-execdir mv {} "$iso_download_folder/$fedora_iso_name.iso" \;
+}
+
+############################	the actual code   ############################
+
+get_iso

@@ -1,0 +1,62 @@
+#!/bin/bash
+
+[ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
+
+username="$(id -nu 1000)"
+
+set -euf -o pipefail
+
+############################	set our variables	############################
+
+recovery_releases_regex="s/^.*\(\/releng\/releases\/.*\/torrent\/\).*$/\1/p"
+recovery_releases_url="https://archlinux.org/releng/releases/"
+recovery_url="https://archlinux.org"
+iso_download_folder="/home/${username}/ISO"
+
+############################	get release version	############################
+
+recovery_iso_list=$(curl -sL "$recovery_releases_url" | sed -n "$recovery_releases_regex")
+recovery_iso_url=$(echo "$recovery_iso_list" | head -n 1)
+raw_date=$(echo "$recovery_iso_url" | cut -d/ -f4)
+iso_date=$(echo "$recovery_iso_url" | cut -d/ -f4 | tr '.' '\n' | tac | xargs | tr " " "." )
+nodotdate=$( echo "$raw_date" | tr -d '.' )
+formatted_date=$( LC_ALL=C date -d "$nodotdate" '+%eXX %B %Y' | sed -e 's/11XX/11th/' -e 's/12XX/12th/' -e 's/13XX/13th/' -e 's/1XX/1st/' -e 's/2XX/2nd/' -e 's/3XX/3rd/' -e 's/XX/th/' -e 's/  / /' )
+
+############################	define our functions	############################
+
+get_iso () {
+if hash aria2c 2>/dev/null; then
+	: ;
+else
+	 dnf install -y aria2 ;
+fi
+
+# test for existing current iso
+	if [ -f "$iso_download_folder/archlinux-$iso_date-x86_64.iso" ]
+	then
+		exit
+	else
+		set +euf +o pipefail
+		rm -rf \
+		${iso_download_folder}/archlinux-*.iso
+		set -euf -o pipefail
+	fi
+
+aria2c \
+	--seed-time 0 \
+	--allow-overwrite=true \
+	--follow-torrent mem \
+	--file-allocation none \
+	--dir "$iso_download_folder" \
+	"${recovery_url}${recovery_iso_url}"
+
+find 	"$iso_download_folder" \
+	-name "archlinux-*.iso" \
+	-execdir chmod 0644 {} \; \
+	-execdir chown qemu:qemu {} \; \
+	-execdir mv {} "archlinux-$iso_date-x86_64.iso" \;
+}
+
+############################	the actual code   ############################
+
+get_iso
