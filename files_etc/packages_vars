@@ -20,6 +20,7 @@ subvolumes=(
 "var/cache"
 "var/crash"
 "var/lib/libvirt/images"
+"var/lib/mock"
 "var/log"
 "var/spool"
 "var/tmp"
