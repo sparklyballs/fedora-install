@@ -17,6 +17,31 @@ umount -A --recursive "${mountpoint_chroot}" || :
 
 clear
 
+# define function for subvolume permissions
+subvol_perms() {
+extra_options=""
+case $1 in
+	@boot)
+	extra_options=",nodev,nosuid,noexec"
+        ;;
+	@home|@root)
+        extra_options=",nodev,nosuid"
+        ;;
+	@var_journal)
+        extra_options=",nodatacow"
+        ;;
+	@var_tmp)
+        extra_options=",nodatacow,nodev,nosuid"
+        ;;
+	@var_accounts|@var_cache|@var_crash|@var_gdm|@var_images|@var_log|@var_machines|@var_portables|@var_spool)
+        extra_options=",nodatacow,nodev,nosuid,noexec"
+        ;;
+        *)
+        extra_options=",nodatacow"
+        ;;
+esac
+}
+
 # make partitions
 clear
 printf "####################	setting up partitions	####################\n"
@@ -63,24 +88,7 @@ mount -o "${toplevel_mount_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${
 
 for dir in "${!subvolumes[@]}" ; do
 
-extra_options=""
-case $dir in
-	@boot)
-	extra_options=",nodev,nosuid,noexec"
-	;;
-	@root|@home)
-	extra_options=",nodev,nosuid"
-	;;
-	@var_journal)
-	extra_options=",nodatacow"
-	;;
-	@var_tmp)
-	extra_options=",nodatacow,nodev,nosuid"
-	;;
-	@var_log|@var_crash|@var_cache|@var_spool|@var_images|@var_machines|@var_portables|@var_gdm|@var_accounts)
-	extra_options=",nodatacow,nodev,nosuid,noexec"
-	;;
-esac
+subvol_perms "$dir"
 
 if [[ "${dir}" == "@var_journal" ]]; then
 :
@@ -167,24 +175,7 @@ printf "%-41s %-24s %-5s %-s %-s\n" \
 
 for dir in "${!subvolumes[@]}" ; do
 
-extra_options=""
-case $dir in
-	@boot)
-	extra_options=",nodev,nosuid,noexec"
-	;;
-	@root|@home)
-	extra_options=",nodev,nosuid"
-	;;
-	@var_journal)
-	extra_options=",nodatacow"
-	;;
-	@var_tmp)
-	extra_options=",nodatacow,nodev,nosuid"
-	;;
-	@var_log|@var_crash|@var_cache|@var_spool|@var_images|@var_machines|@var_portables|@var_gdm|@var_accounts)
-	extra_options=",nodatacow,nodev,nosuid,noexec"
-	;;
-esac
+subvol_perms "$dir"
 
 printf "%-41s %-24s %-5s %-s %-s\n" \
 	"UUID=${root_uuid}" \
