@@ -180,7 +180,7 @@ printf "%-41s %-24s %-5s %-s %-s\n" \
 	"UUID=${root_uuid}" \
 	"/" \
 	"btrfs" \
-	"${toplevel_mount_options},subvol=@" \
+	"${toplevel_mount_options}" \
 	"0 0" >> "${mountpoint_chroot}/etc/fstab"
 
 for dir in "${!subvolumes[@]}" ; do
