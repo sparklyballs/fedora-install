@@ -62,13 +62,12 @@ mkfs.btrfs	-f	-L "${btrfs_label}"	-n 32k	/dev/disk/by-partlabel/"${btrfs_label}"
 
 udevadm trigger
 
-set -ex
 
 # mount btrfs volume
 mount -o clear_cache,nospace_cache /dev/disk/by-partlabel/"${btrfs_label}" "${mountpoint_chroot}"
 restorecon -RF "${mountpoint_chroot}"
 
-btrfs subvolume create "${mountpoint_chroot}@"
+btrfs subvolume create "${mountpoint_chroot}/@"
 
 if [[ "$swap_size" = *noswap* ]] ; then
 :
