@@ -66,6 +66,8 @@ udevadm trigger
 mount -o clear_cache,nospace_cache /dev/disk/by-partlabel/"${btrfs_label}" "${mountpoint_chroot}"
 restorecon -RF "${mountpoint_chroot}"
 
+btrfs subvolume create "${mountpoint_chroot}/@"
+
 if [[ "$swap_size" = *noswap* ]] ; then
 :
 else
@@ -74,7 +76,7 @@ fi
 
 for dir in "${!subvolumes[@]}" ; do
 btrfs subvolume create "${mountpoint_chroot}/${dir}"
-if [[ "${dir}" == "@home" ]]; then
+if [[ "${dir}" == "@home" ]] || [[ "${dir}" == "@root" ]] ; then
 :
 else
 chattr +C "${mountpoint_chroot}/${dir}"
@@ -84,7 +86,7 @@ done
 umount "${mountpoint_chroot}"
 
 # mount (sub)volumes
-mount -o "${toplevel_mount_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}"
+mount -o "${toplevel_mount_options},subvol=@" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}"
 
 for dir in "${!subvolumes[@]}" ; do
 
@@ -105,7 +107,7 @@ mount -o "${mount_options},nodatacow,subvol=@var_journal" "/dev/disk/by-partlabe
 
 # mount efi partition
 mkdir -p "${mountpoint_chroot}/boot/efi"
-mount "/dev/disk/by-partlabel/${efi_label}" "${mountpoint_chroot}/boot/efi"
+mount -o umask=0077,shortname=winnt,nodev,nosuid,noexec "/dev/disk/by-partlabel/${efi_label}" "${mountpoint_chroot}/boot/efi"
 
 # permissions
 chmod 1770  "${mountpoint_chroot}/var/lib/gdm"
@@ -163,14 +165,14 @@ printf "%-41s %-24s %-5s %-s %-s\n" \
 	"UUID=${efi_uuid}" \
 	"/boot/efi" \
 	"vfat" \
-	"nodev,nosuid,noexec" \
-	"0 0" > "${mountpoint_chroot}/etc/fstab"
+	"umask=0077,shortname=winnt,nodev,nosuid,noexec" \
+	"0 2" > "${mountpoint_chroot}/etc/fstab"
 
 printf "%-41s %-24s %-5s %-s %-s\n" \
 	"UUID=${root_uuid}" \
 	"/" \
 	"btrfs" \
-	"${toplevel_mount_options}" \
+	"${toplevel_mount_options},subvol=@" \
 	"0 0" >> "${mountpoint_chroot}/etc/fstab"
 
 for dir in "${!subvolumes[@]}" ; do

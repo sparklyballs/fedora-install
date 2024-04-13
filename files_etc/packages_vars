@@ -71,6 +71,7 @@ polkit \
 snapper \
 tpm2-tools \
 tpm2-tss \
+zstd \
 )
 
 grub_packages=( \
