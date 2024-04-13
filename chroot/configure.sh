@@ -102,6 +102,11 @@ cat << EOF > /etc/dracut.conf.d/99-my-flags.conf
 omit_dracutmodules+=" biosdevname busybox connman dmraid memstrack network-legacy network-wicked rngd systemd-networkd "
 EOF
 
+# regenerate boot loader entries
+rm -f \
+/boot/loader/entries/*
+dnf reinstall -y kernel-core
+
 cat > /etc/dracut.conf.d/00-options.conf <<EOF
 hostonly="yes"
 early_microcode="yes"
