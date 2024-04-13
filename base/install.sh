@@ -83,6 +83,8 @@ chattr +C "${mountpoint_chroot}/${dir}"
 fi
 done
 
+# set @ as default root subvolume
+btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | grep "@$" | grep -oP '(?<=ID )[0-9]+')" "${mountpoint_chroot}"
 umount "${mountpoint_chroot}"
 
 # mount (sub)volumes
