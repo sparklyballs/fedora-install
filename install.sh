@@ -29,6 +29,7 @@ dnf install --best -y \
 install -D -m 0755 -o root "${install_base_folder}/chroot/applications.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/base.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/configure.sh" "${mountpoint_chroot}/root"
+install -D -m 0755 -o root "${install_base_folder}/chroot/setup.sh" "${mountpoint_chroot}/root"
 
 # install get iso and grubfix scripts
 install -D -m 0755 -o root "${install_base_folder}/files_etc/get_archiso" "${mountpoint_chroot}/usr/bin"
@@ -56,15 +57,18 @@ chroot "${mountpoint_chroot}" /root/base.sh \
 #	"${virtualization_packages[*]}"
 
 chroot "${mountpoint_chroot}" /root/configure.sh \
-	"${grub_packages[*]}" \
 	"${kernel_parameters[*]}" \
 	"${max_resolution}" \
 	"${microcode}" \
 	"${nvidia_kernel[*]}" \
 	"${video_card_manufacturers[*]}"
 
+chroot "${mountpoint_chroot}" /root/setup.sh \
+	"${grub_packages[*]}"
+
 # cleanup scripts from root
 rm -f \
 "${mountpoint_chroot}/root/applications.sh" \
 "${mountpoint_chroot}/root/base.sh" \
-"${mountpoint_chroot}/root/configure.sh"
+"${mountpoint_chroot}/root/configure.sh" \
+"${mountpoint_chroot}/root/setup.sh"

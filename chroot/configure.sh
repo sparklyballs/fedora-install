@@ -2,15 +2,13 @@
 set -uf -o pipefail
 
 # import variables from install script
-grub_packages=${1}
-kernel_parameters=${2}
-max_resolution=${3}
-microcode=${4}
-nvidia_kernel=${5}
-video_card_manufacturers=${6}
+kernel_parameters=${1}
+max_resolution=${2}
+microcode=${3}
+nvidia_kernel=${4}
+video_card_manufacturers=${5}
 
 # read variables into arrays
-IFS=' ' read -r -a grub_packages_array <<< "$grub_packages"
 IFS=' ' read -r -a kernel_parameters_array <<< "$kernel_parameters"
 IFS=' ' read -r -a nvidia_kernel_array <<< "$nvidia_kernel"
 IFS=' ' read -r -a video_card_manufacturers_array <<< "$video_card_manufacturers"
