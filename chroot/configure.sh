@@ -86,11 +86,6 @@ sed -i -e "s/[[:space:]]\"/\"/g" /etc/default/grub
 
 grub2-mkconfig -o /boot/grub2/grub.cfg
 
-# regenerate boot loader entries
-rm -f \
-/boot/loader/entries/*
-dnf reinstall -y kernel-core
-
 # regenerate dracut
 cat << EOF > /etc/dracut.conf.d/99-my-flags.conf
 omit_dracutmodules+=" biosdevname busybox connman dmraid memstrack network-legacy network-wicked rngd systemd-networkd "
@@ -111,9 +106,6 @@ for drv in qemu interface network nodedev nwfilter secret storage; do \
 done
 
 systemctl enable fstrim.timer
-
-# regenerate grub config once more
-dracut -f --kver "$(rpm -q kernel | sed 's/^[^-]*-//')"
 
 # fix selinux
 fixfiles onboot
