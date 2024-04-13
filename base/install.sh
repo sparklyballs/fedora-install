@@ -79,7 +79,7 @@ btrfs subvolume create "${mountpoint_chroot}/${dir}"
 if [[ "${dir}" == "@home" ]] || [[ "${dir}" == "@root" ]] ; then
 :
 else
-chattr +C "${mountpoint_chroot}/${dir}"
+chattr +C -V "${mountpoint_chroot}/${dir}"
 fi
 done
 
