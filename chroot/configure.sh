@@ -84,28 +84,17 @@ fi
 sed -i -e "s/[[:space:]]\+/ /g" /etc/default/grub
 sed -i -e "s/[[:space:]]\"/\"/g" /etc/default/grub
 
-# clear grub config and reinstall grub packages
-rm -f \
-/boot/grub2/grub.cfg \
-/boot/efi/EFI/fedora/grub.cfg
-
-dnf reinstall -y \
-"${grub_packages_array[@]}"
-
-# reconfigure the grub.cfg for btrfs etc...
-sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
-sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
 grub2-mkconfig -o /boot/grub2/grub.cfg
-
-# regenerate dracut
-cat << EOF > /etc/dracut.conf.d/99-my-flags.conf
-omit_dracutmodules+=" biosdevname busybox connman dmraid memstrack network-legacy network-wicked rngd systemd-networkd "
-EOF
 
 # regenerate boot loader entries
 rm -f \
 /boot/loader/entries/*
 dnf reinstall -y kernel-core
+
+# regenerate dracut
+cat << EOF > /etc/dracut.conf.d/99-my-flags.conf
+omit_dracutmodules+=" biosdevname busybox connman dmraid memstrack network-legacy network-wicked rngd systemd-networkd "
+EOF
 
 cat > /etc/dracut.conf.d/00-options.conf <<EOF
 hostonly="yes"
@@ -122,6 +111,9 @@ for drv in qemu interface network nodedev nwfilter secret storage; do \
 done
 
 systemctl enable fstrim.timer
+
+# regenerate grub config once more
+dracut -f --kver "$(rpm -q kernel | sed 's/^[^-]*-//')"
 
 # fix selinux
 fixfiles onboot
