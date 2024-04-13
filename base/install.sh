@@ -21,19 +21,19 @@ clear
 subvol_perms() {
 extra_options=""
 case $1 in
-	@boot)
+	@/boot)
 	extra_options=",nodev,nosuid,noexec"
         ;;
-	@home|@root)
+	@/home|@/root)
         extra_options=",nodev,nosuid"
         ;;
-	@var_journal)
+	@/var_journal)
         extra_options=",nodatacow"
         ;;
-	@var_tmp)
+	@/var_tmp)
         extra_options=",nodatacow,nodev,nosuid"
         ;;
-	@var_accounts|@var_cache|@var_crash|@var_gdm|@var_images|@var_log|@var_machines|@var_portables|@var_spool)
+	@/var_accounts|@/var_cache|@/var_crash|@/var_gdm|@/var_images|@/var_log|@/var_machines|@/var_portables|@/var_spool)
         extra_options=",nodatacow,nodev,nosuid,noexec"
         ;;
         *)
@@ -72,12 +72,12 @@ btrfs subvolume create "${mountpoint_chroot}/@"
 if [[ "$swap_size" = *noswap* ]] ; then
 :
 else
-subvolumes["@swap"]="swap"
+subvolumes["@/swap"]="swap"
 fi
 
 for dir in "${!subvolumes[@]}" ; do
 btrfs subvolume create "${mountpoint_chroot}/${dir}"
-if [[ "${dir}" == "@home" ]] || [[ "${dir}" == "@root" ]] ; then
+if [[ "${dir}" == "@/home" ]] || [[ "${dir}" == "@/root" ]] ; then
 :
 else
 chattr +C "${mountpoint_chroot}/${dir}"
@@ -95,7 +95,7 @@ for dir in "${!subvolumes[@]}" ; do
 
 subvol_perms "$dir"
 
-if [[ "${dir}" == "@var_journal" ]]; then
+if [[ "${dir}" == "@/var_journal" ]]; then
 :
 else
 mkdir -p "${mountpoint_chroot}/${subvolumes[$dir]}"
@@ -106,7 +106,7 @@ done
 
 # mount /var/log/journal
 mkdir -p "${mountpoint_chroot}/var/log/journal"
-mount -o "${mount_options},nodatacow,subvol=@var_journal" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/var/log/journal"
+mount -o "${mount_options},nodatacow,subvol=@/var_journal" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/var/log/journal"
 
 # mount efi partition
 mkdir -p "${mountpoint_chroot}/boot/efi"
@@ -135,8 +135,8 @@ dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" instal
 
 
 # fix grub subvol booting , hopefully
-sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/10_linux"
-sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/20_linux_xen"
+# sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/10_linux"
+# sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/20_linux_xen"
 
 # copy host resolv conf to our install
 rm -f "${mountpoint_chroot}/etc/resolv.conf"
