@@ -89,7 +89,7 @@ btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | gre
 umount "${mountpoint_chroot}"
 
 # mount (sub)volumes
-mount -o "${toplevel_mount_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}"
+mount -o "${toplevel_mount_options},subvol=@" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}"
 
 for dir in "${!subvolumes[@]}" ; do
 
@@ -180,7 +180,7 @@ printf "%-41s %-24s %-5s %-s %-s\n" \
 	"UUID=${root_uuid}" \
 	"/" \
 	"btrfs" \
-	"${toplevel_mount_options}" \
+	"${toplevel_mount_options},subvol=@" \
 	"0 0" >> "${mountpoint_chroot}/etc/fstab"
 
 for dir in "${!subvolumes[@]}" ; do
