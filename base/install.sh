@@ -134,6 +134,11 @@ dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" instal
 "${base_packages[@]}" \
 "${grub_packages[@]}"
 
+
+# fix grub subvol booting , hopefully
+sed -i 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/10_linux"
+sed -i 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/20_linux_xen"
+
 # copy host resolv conf to our install
 rm -f "${mountpoint_chroot}/etc/resolv.conf"
 cp /etc/resolv.conf "${mountpoint_chroot}/etc/"
