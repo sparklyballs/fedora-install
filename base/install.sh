@@ -85,6 +85,7 @@ fi
 done
 
 # set @ as default root subvolume
+set -ex
 btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | grep "@$" | grep -oP '(?<=ID )[0-9]+')" "${mountpoint_chroot}"
 umount "${mountpoint_chroot}"
 
