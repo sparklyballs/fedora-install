@@ -21,8 +21,8 @@ kernel-core
 # configure grub for subvol booting and regenerate grub
 sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
 sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
-# sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/10_linux"
-# sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/20_linux_xen"
+# sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' /etc/grub.d/10_linux
+# sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' /etc/grub.d/20_linux_xen
 
 grub2-mkconfig -o /boot/grub2/grub.cfg
 
