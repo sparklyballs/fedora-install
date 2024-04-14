@@ -1,6 +1,9 @@
 #!/bin/bash
 set -uf -o pipefail
 
+# set selinux to permissive
+setenforce 0
+
 # import variables from install script
 app_packages=${1}
 flatpak_packages=${2}

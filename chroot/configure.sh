@@ -1,6 +1,9 @@
 #!/bin/bash
 set -uf -o pipefail
 
+# set selinux to permissive
+setenforce 0
+
 # import variables from install script
 kernel_parameters=${1}
 max_resolution=${2}
