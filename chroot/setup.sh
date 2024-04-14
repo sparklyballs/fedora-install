@@ -19,6 +19,26 @@ mkdir /.snapshots
 mount -a
 chmod 750 /.snapshots
 
+# install grub-btrfs
+dnf install -y \
+	gcc \
+	gcc-c++ \
+	git \
+	make \
+	inotify-tools
+
+# install btrfs-grub
+git clone https://github.com/Antynea/grub-btrfs /tmp/grub-btrfs
+sed -i \
+	-e '/#GRUB_BTRFS_SNAPSHOT_KERNEL/a GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="systemd.volatile=state"' \
+	-e '/#GRUB_BTRFS_GRUB_DIRNAME/a GRUB_BTRFS_GRUB_DIRNAME="/boot/grub2"' \
+	-e '/#GRUB_BTRFS_MKCONFIG=/a GRUB_BTRFS_MKCONFIG=/sbin/grub2-mkconfig'\
+	-e '/#GRUB_BTRFS_SCRIPT_CHECK=/a GRUB_BTRFS_SCRIPT_CHECK=grub2-script-check' \
+/tmp/grub-btrfs/config
+
+cd /tmp/grub-btrfs || exit
+make install
+
 # remove grub config and loader entries
 rm -f \
 	/boot/grub2/grub.cfg \
@@ -31,6 +51,9 @@ dnf reinstall -y \
 kernel-core
 
 # configure grub for subvol booting and regenerate grub
+# configure system for snapper
+grep -qF ".snapshots" /etc/updatedb.conf || echo 'PRUNENAMES = ".snapshots"' | tee -a /etc/updatedb.conf
+grep -qF "SUSE_BTRFS_SNAPSHOT_BOOTING" /etc/default/grub || echo 'SUSE_BTRFS_SNAPSHOT_BOOTING="true"' | tee -a /etc/default/grub
 sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
 sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
 # sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' /etc/grub.d/10_linux
