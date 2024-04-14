@@ -5,9 +5,6 @@
 
 set -uf -o pipefail
 
-# set selinux to permissive
-setenforce 0
-
 # run config script
 install_base_folder=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
 . "${install_base_folder}/config.sh"

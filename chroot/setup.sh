@@ -40,22 +40,22 @@ cd /tmp/grub-btrfs || exit
 make install
 
 # remove grub config and loader entries
-rm -f \
-	/boot/grub2/grub.cfg \
-	/boot/efi/EFI/fedora/grub.cfg \
-	/boot/loader/entries/*
+# rm -f \
+#	/boot/grub2/grub.cfg \
+#	/boot/efi/EFI/fedora/grub.cfg \
+#	/boot/loader/entries/*
 
 # reinstall grub packages and kernel-core
-dnf reinstall -y \
-"${grub_packages_array[@]}" \
-kernel-core
+# dnf reinstall -y \
+# "${grub_packages_array[@]}" \
+# kernel-core
 
 # configure grub for subvol booting and regenerate grub
 # configure system for snapper
 grep -qF ".snapshots" /etc/updatedb.conf || echo 'PRUNENAMES = ".snapshots"' | tee -a /etc/updatedb.conf
 grep -qF "SUSE_BTRFS_SNAPSHOT_BOOTING" /etc/default/grub || echo 'SUSE_BTRFS_SNAPSHOT_BOOTING="true"' | tee -a /etc/default/grub
-sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
-sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
+# sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
+# sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
 # sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' /etc/grub.d/10_linux
 # sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' /etc/grub.d/20_linux_xen
 
@@ -63,3 +63,26 @@ grub2-mkconfig -o /boot/grub2/grub.cfg
 
 # regenerate initramfs
 dracut -f --kver "$(rpm -q kernel | sed 's/^[^-]*-//')"
+
+# enable snapper services
+systemctl enable grub-btrfsd.service
+sed -i 's/OnUnitActiveSec=.*/OnUnitActiveSec=3h/g' /lib/systemd/system/snapper-cleanup.timer
+systemctl enable snapper-timeline.timer
+systemctl enable snapper-cleanup.timer
+
+# create first snapshot and set as default
+mkdir -v /.snapshots/1
+bash -c "cat > /.snapshots/1/info.xml" <<EOF
+<?xml version="1.0"?>
+ <snapshot>
+   <type>single</type>
+   <num>1</num>
+   <date>$(date -u +"%F %T")</date>
+   <description>root subvolume</description>
+ </snapshot>
+EOF
+
+btrfs subvolume snapshot / /.snapshots/1/snapshot
+snapshot_id="$(btrfs inspect-internal rootid /.snapshots/1/snapshot)"
+btrfs subvolume set-default "${snapshot_id}" /
+

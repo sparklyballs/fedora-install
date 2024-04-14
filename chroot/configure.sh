@@ -1,9 +1,6 @@
 #!/bin/bash
 set -uf -o pipefail
 
-# set selinux to permissive
-setenforce 0
-
 # import variables from install script
 kernel_parameters=${1}
 max_resolution=${2}
@@ -97,8 +94,6 @@ hostonly="yes"
 early_microcode="yes"
 compress="zstd"
 EOF
-
-dracut -f --kver "$(rpm -q kernel | sed 's/^[^-]*-//')"
 
 # enable services
 for drv in qemu interface network nodedev nwfilter secret storage; do \

@@ -1,9 +1,6 @@
 #!/bin/bash
 set -uf -o pipefail
 
-# set selinux to permissive
-setenforce 0
-
 # import variables from install script
 copr_repos=${1}
 dnf_configure=${2}
