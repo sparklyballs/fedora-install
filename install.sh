@@ -29,15 +29,16 @@ dnf install --best -y \
 install -D -m 0755 -o root "${install_base_folder}/chroot/applications.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/base.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/configure.sh" "${mountpoint_chroot}/root"
+install -D -m 0755 -o root "${install_base_folder}/chroot/setup.sh" "${mountpoint_chroot}/root"
 
 # install get iso and grubfix scripts
 install -D -m 0755 -o root "${install_base_folder}/files_etc/get_archiso" "${mountpoint_chroot}/usr/bin"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/get_fediso" "${mountpoint_chroot}/usr/bin"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/grub_fix" "${mountpoint_chroot}/usr/bin"
 
-# install forkboard and snapshot scripts
+# install forkboard and hibernate scripts
 install -D -m 0755 -o root "${install_base_folder}/files_etc/forkboard.sh" "${mountpoint_chroot}/root"
-install -D -m 0755 -o root "${install_base_folder}/files_etc/snapshot.sh" "${mountpoint_chroot}/root"
+install -D -m 0755 -o root "${install_base_folder}/files_etc/hibernate.sh" "${mountpoint_chroot}/root"
 
 # run chroot scripts
 chroot "${mountpoint_chroot}" /root/base.sh \
@@ -56,15 +57,19 @@ chroot "${mountpoint_chroot}" /root/applications.sh \
 	"${virtualization_packages[*]}"
 
 chroot "${mountpoint_chroot}" /root/configure.sh \
-	"${grub_packages[*]}" \
 	"${kernel_parameters[*]}" \
 	"${max_resolution}" \
 	"${microcode}" \
 	"${nvidia_kernel[*]}" \
 	"${video_card_manufacturers[*]}"
 
+chroot "${mountpoint_chroot}" /root/setup.sh \
+	"${snapper_configs[*]}" \
+	"${snapper_packages[*]}"
+
 # cleanup scripts from root
 rm -f \
 "${mountpoint_chroot}/root/applications.sh" \
 "${mountpoint_chroot}/root/base.sh" \
-"${mountpoint_chroot}/root/configure.sh"
+"${mountpoint_chroot}/root/configure.sh" \
+"${mountpoint_chroot}/root/setup.sh"

@@ -5,19 +5,6 @@
 # set our variables/arrays
 username="$(id -nu 1000)"
 
-snapper_configs=(
-"ALLOW_GROUPS=wheel"
-"SYNC_ACL=yes"
-"TIMELINE_CREATE=yes"
-"TIMELINE_MIN_AGE=1800"
-"NUMBER_LIMIT=30"
-"TIMELINE_LIMIT_HOURLY=7"
-"TIMELINE_LIMIT_DAILY=5"
-"TIMELINE_LIMIT_WEEKLY=0"
-"TIMELINE_LIMIT_MONTHLY=0"
-"TIMELINE_LIMIT_YEARLY=0"
-)
-
 calculate_swap () {
 	mem_calculated=$(free --giga | grep Mem: | awk '{print $2}')
 	mem_calculated=$(( (mem_calculated + 1) & ~1 ))
@@ -34,21 +21,10 @@ calculate_swap () {
 }
 calculate_swap
 
-# fix sparse file error
-grub2-editenv - unset menu_auto_hide
-
 # set permissions on libvirt images folder
 setfacl -R -b /var/lib/libvirt/images
 setfacl -R -m u:"${username}":rwX /var/lib/libvirt/images
 setfacl -m d:u:"${username}":rwx /var/lib/libvirt/images
-
-# install required packages
-dnf install -y \
-btrfs-progs \
-inotify-tools \
-make \
-rsync \
-vim
 
 # configure swap hibernation, if required
 if [[ "$swap_size" = *noswap* ]] ; then
@@ -206,80 +182,4 @@ EOF
 
 systemctl enable suspend-to-hibernate
 
-# end of swap hibernation setup
 fi
-
-# install snapper packages
-dnf install -y \
-	python3-dnf-plugin-snapper \
-	snapper
-
-# create snapper configs
-umount /.snapshots
-rm -r /.snapshots
-snapper -c root create-config /
-btrfs subvolume delete /.snapshots
-mkdir /.snapshots
-
-# remount everything
-mount -va
-
-# configure snapper
-for conf in "${snapper_configs[@]}" ; do
-snapper -c root set-config "${conf}"
-done
-
-# configure system for snapper
-grep -qF ".snapshots" /etc/updatedb.conf || echo 'PRUNENAMES = ".snapshots"' | tee -a /etc/updatedb.conf
-grep -qF "SUSE_BTRFS_SNAPSHOT_BOOTING" /etc/default/grub || echo 'SUSE_BTRFS_SNAPSHOT_BOOTING="true"' | tee -a /etc/default/grub
-
-grub2-mkconfig -o /boot/grub2/grub.cfg
-
-# install btrfs-grub
-git clone https://github.com/Antynea/grub-btrfs /tmp/grub-btrfs
-sed -i \
-	-e '/#GRUB_BTRFS_SNAPSHOT_KERNEL/a GRUB_BTRFS_SNAPSHOT_KERNEL_PARAMETERS="systemd.volatile=state"' \
-	-e '/#GRUB_BTRFS_GRUB_DIRNAME/a GRUB_BTRFS_GRUB_DIRNAME="/boot/grub2"' \
-	-e '/#GRUB_BTRFS_MKCONFIG=/a GRUB_BTRFS_MKCONFIG=/sbin/grub2-mkconfig'\
-	-e '/#GRUB_BTRFS_SCRIPT_CHECK=/a GRUB_BTRFS_SCRIPT_CHECK=grub2-script-check' \
-/tmp/grub-btrfs/config
-
-cd /tmp/grub-btrfs || exit
-make install
-
-grub2-mkconfig -o /boot/grub2/grub.cfg
-
-# enable snapper services
-systemctl enable --now grub-btrfsd.service
-sed -i 's/OnUnitActiveSec=.*/OnUnitActiveSec=3h/g' /lib/systemd/system/snapper-cleanup.timer
-systemctl enable --now snapper-timeline.timer
-systemctl enable --now snapper-cleanup.timer
-
-# strip any extra spaces from grub config
-sed -i -e "s/[[:space:]]\+/ /g" /etc/default/grub
-sed -i -e "s/[[:space:]]\"/\"/g" /etc/default/grub
-
-# fix for tpm error when booting snapshots
-cat <<EOF > /etc/grub.d/02_tpm
-#!/usr/bin/sh -e
-echo "rmmod tpm"
-EOF
-chmod +x /etc/grub.d/02_tpm
-
-grub2-mkconfig -o /boot/grub2/grub.cfg
-
-# create first snapshot and set as default
-mkdir -v /.snapshots/1
-bash -c "cat > /.snapshots/1/info.xml" <<EOF
-<?xml version="1.0"?>
- <snapshot>
-   <type>single</type>
-   <num>1</num>
-   <date>$(date -u +"%F %T")</date>
-   <description>root subvolume</description>
- </snapshot>
-EOF
-
-btrfs subvolume snapshot / /.snapshots/1/snapshot
-snapshot_id="$(btrfs inspect-internal rootid /.snapshots/1/snapshot)"
-btrfs subvolume set-default "${snapshot_id}" /

@@ -53,6 +53,19 @@ nvidia_kernel=(
 "rd.driver.blacklist=nouveau"
 )
 
+snapper_configs=(
+"ALLOW_GROUPS=wheel"
+"SYNC_ACL=yes"
+"TIMELINE_CREATE=yes"
+"TIMELINE_MIN_AGE=1800"
+"NUMBER_LIMIT=30"
+"TIMELINE_LIMIT_HOURLY=7"
+"TIMELINE_LIMIT_DAILY=5"
+"TIMELINE_LIMIT_WEEKLY=0"
+"TIMELINE_LIMIT_MONTHLY=0"
+"TIMELINE_LIMIT_YEARLY=0"
+)
+
 # package arrays
 host_packages=( \
 dialog \
@@ -68,9 +81,9 @@ grubby \
 kernel \
 langpacks-en \
 polkit \
-snapper \
 tpm2-tools \
 tpm2-tss \
+zstd \
 )
 
 grub_packages=( \
@@ -89,9 +102,15 @@ shim-ia32 \
 shim-x64 \
 )
 
+snapper_packages=( \
+python3-dnf-plugin-snapper \
+snapper \
+)
+
 app_packages=( \
 acl \
 acpid \
+aria2 \
 automake \
 bash-completion \
 btop \

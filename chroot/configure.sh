@@ -2,15 +2,13 @@
 set -uf -o pipefail
 
 # import variables from install script
-grub_packages=${1}
-kernel_parameters=${2}
-max_resolution=${3}
-microcode=${4}
-nvidia_kernel=${5}
-video_card_manufacturers=${6}
+kernel_parameters=${1}
+max_resolution=${2}
+microcode=${3}
+nvidia_kernel=${4}
+video_card_manufacturers=${5}
 
 # read variables into arrays
-IFS=' ' read -r -a grub_packages_array <<< "$grub_packages"
 IFS=' ' read -r -a kernel_parameters_array <<< "$kernel_parameters"
 IFS=' ' read -r -a nvidia_kernel_array <<< "$nvidia_kernel"
 IFS=' ' read -r -a video_card_manufacturers_array <<< "$video_card_manufacturers"
@@ -84,20 +82,9 @@ fi
 sed -i -e "s/[[:space:]]\+/ /g" /etc/default/grub
 sed -i -e "s/[[:space:]]\"/\"/g" /etc/default/grub
 
-# clear grub config and reinstall grub packages
-rm -f \
-/boot/grub2/grub.cfg \
-/boot/efi/EFI/fedora/grub.cfg
-
-dnf reinstall -y \
-"${grub_packages_array[@]}"
-
-# reconfigure the grub.cfg for btrfs etc...
-sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
-sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
 grub2-mkconfig -o /boot/grub2/grub.cfg
 
-# regenerate dracut
+# configure dracut
 cat << EOF > /etc/dracut.conf.d/99-my-flags.conf
 omit_dracutmodules+=" biosdevname busybox connman dmraid memstrack network-legacy network-wicked rngd systemd-networkd "
 EOF
@@ -107,8 +94,6 @@ hostonly="yes"
 early_microcode="yes"
 compress="zstd"
 EOF
-
-dracut -f --kver "$(rpm -q kernel | sed 's/^[^-]*-//')"
 
 # enable services
 for drv in qemu interface network nodedev nwfilter secret storage; do \

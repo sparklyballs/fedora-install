@@ -16,6 +16,10 @@ cp -npr /tmp/forkboard/usr/bin/forkboard /usr/bin/
 cp -npr /tmp/forkboard/usr/share/applications/forkboard.desktop /usr/share/applications/
 cp -npr /tmp/forkboard/usr/share/icons/hicolor/512x512/apps/forkboard.png /usr/share/icons/hicolor/512x512/apps/
 
+# update icon caches
+gtk4-update-icon-cache -f /usr/share/icons/hicolor/
+gtk-update-icon-cache -f /usr/share/icons/hicolor/
+
 # fetch piavpn run file
 piavpn_url=$(curl -sL https://www.privateinternetaccess.com/download/linux-vpn | grep https://installers.privateinternetaccess.com/download/pia-linux | head -n 1 | sed -r "s/(.*href=\")([^\"]*)(.*)/\2/")
 piavpn_file=$(echo "${piavpn_url}" | awk -F / '{print $NF}')
