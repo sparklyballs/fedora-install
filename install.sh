@@ -36,7 +36,7 @@ install -D -m 0755 -o root "${install_base_folder}/files_etc/get_archiso" "${mou
 install -D -m 0755 -o root "${install_base_folder}/files_etc/get_fediso" "${mountpoint_chroot}/usr/bin"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/grub_fix" "${mountpoint_chroot}/usr/bin"
 
-# install forkboard and snapshot scripts
+# install forkboard and hibernate scripts
 install -D -m 0755 -o root "${install_base_folder}/files_etc/forkboard.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/hibernate.sh" "${mountpoint_chroot}/root"
 
@@ -48,13 +48,13 @@ chroot "${mountpoint_chroot}" /root/base.sh \
 	"${motherboard_manufacturer}" \
 	"${video_card_manufacturers[*]}"
 
-#chroot "${mountpoint_chroot}" /root/applications.sh \
-#	"${app_packages[*]}" \
-#	"${flatpak_packages[*]}" \
-#	"${gaming_packages[*]}" \
-#	"${motherboard_manufacturer}" \
-#	"${video_card_manufacturers[*]}" \
-#	"${virtualization_packages[*]}"
+chroot "${mountpoint_chroot}" /root/applications.sh \
+	"${app_packages[*]}" \
+	"${flatpak_packages[*]}" \
+	"${gaming_packages[*]}" \
+	"${motherboard_manufacturer}" \
+	"${video_card_manufacturers[*]}" \
+	"${virtualization_packages[*]}"
 
 chroot "${mountpoint_chroot}" /root/configure.sh \
 	"${kernel_parameters[*]}" \
