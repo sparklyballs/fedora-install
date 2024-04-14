@@ -24,7 +24,7 @@ rm -f \
 
 # reinstall grub packages and kernel-core
 dnf reinstall -y \
-"${grub_packages_array[@]}"\
+"${grub_packages_array[@]}" \
 kernel-core
 
 # configure grub for subvol booting and regenerate grub
