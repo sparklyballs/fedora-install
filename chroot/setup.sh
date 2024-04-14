@@ -11,13 +11,13 @@ grub_packages=${1}
 IFS=' ' read -r -a grub_packages_array <<< "$grub_packages"
 
 # setup snapper , deleting existing folders and remounting etc.
-# umount /.snapshots
-# rm -r /.snapshots
-# snapper --no-dbus -c root create-config /
-# btrfs subvolume delete /.snapshots
-# mkdir /.snapshots
-# mount -a
-# chmod 750 /.snapshots
+umount /.snapshots
+rm -r /.snapshots
+snapper --no-dbus -c root create-config /
+btrfs subvolume delete /.snapshots
+mkdir /.snapshots
+mount -a
+chmod 750 /.snapshots
 
 # remove grub config and loader entries
 rm -f \
