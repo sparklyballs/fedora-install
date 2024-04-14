@@ -4,6 +4,10 @@ set -uf -o pipefail
 # import variables from install script
 grub_packages=${1}
 
+
+# set selinux to permissive
+setenforce 0
+
 # read variables into arrays
 IFS=' ' read -r -a grub_packages_array <<< "$grub_packages"
 
