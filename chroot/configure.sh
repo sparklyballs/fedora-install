@@ -84,7 +84,7 @@ sed -i -e "s/[[:space:]]\"/\"/g" /etc/default/grub
 
 grub2-mkconfig -o /boot/grub2/grub.cfg
 
-# regenerate dracut
+# configure dracut
 cat << EOF > /etc/dracut.conf.d/99-my-flags.conf
 omit_dracutmodules+=" biosdevname busybox connman dmraid memstrack network-legacy network-wicked rngd systemd-networkd "
 EOF

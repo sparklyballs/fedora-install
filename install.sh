@@ -38,7 +38,7 @@ install -D -m 0755 -o root "${install_base_folder}/files_etc/grub_fix" "${mountp
 
 # install forkboard and snapshot scripts
 install -D -m 0755 -o root "${install_base_folder}/files_etc/forkboard.sh" "${mountpoint_chroot}/root"
-install -D -m 0755 -o root "${install_base_folder}/files_etc/snapshot.sh" "${mountpoint_chroot}/root"
+install -D -m 0755 -o root "${install_base_folder}/files_etc/hibernate.sh" "${mountpoint_chroot}/root"
 
 # run chroot scripts
 chroot "${mountpoint_chroot}" /root/base.sh \
@@ -64,7 +64,8 @@ chroot "${mountpoint_chroot}" /root/configure.sh \
 	"${video_card_manufacturers[*]}"
 
 chroot "${mountpoint_chroot}" /root/setup.sh \
-	"${grub_packages[*]}"
+	"${snapper_configs[*]}" \
+	"${snapper_packages[*]}"
 
 # cleanup scripts from root
 rm -f \
