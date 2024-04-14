@@ -110,6 +110,7 @@ snapper \
 app_packages=( \
 acl \
 acpid \
+aria2 \
 automake \
 bash-completion \
 btop \
