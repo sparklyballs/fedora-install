@@ -66,7 +66,7 @@ chroot "${mountpoint_chroot}" /root/configure.sh \
 	"${video_card_manufacturers[*]}"
 
 chroot "${mountpoint_chroot}" /root/hibernate.sh \
-	"${swap_space}"
+	"${swap_size}"
 
 chroot "${mountpoint_chroot}" /root/snapset.sh \
 	"${snapper_configs[*]}" \

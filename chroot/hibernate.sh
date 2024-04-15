@@ -2,7 +2,7 @@
 set -uf -o pipefail
 
 # import variables from install script
-swap_space=${1}
+swap_size=${1}
 
 # set selinux to permissive
 setenforce 0
