@@ -39,9 +39,6 @@ install -D -m 0755 -o root "${install_base_folder}/files_etc/get_archiso" "${mou
 install -D -m 0755 -o root "${install_base_folder}/files_etc/get_fediso" "${mountpoint_chroot}/usr/bin"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/grub_fix" "${mountpoint_chroot}/usr/bin"
 
-# install forkboard script
-install -D -m 0755 -o root "${install_base_folder}/files_etc/forkboard.sh" "${mountpoint_chroot}/root"
-
 # run chroot scripts
 chroot "${mountpoint_chroot}" /root/base.sh \
 	"${copr_repos[*]}" \
