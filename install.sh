@@ -31,7 +31,7 @@ install -D -m 0755 -o root "${install_base_folder}/chroot/base.sh" "${mountpoint
 install -D -m 0755 -o root "${install_base_folder}/chroot/configure.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/hibernate.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/snapset.sh" "${mountpoint_chroot}/root"
-cp -pr "${install_base_folder}/files-etc/swap" "${mountpoint_chroot}/root"
+cp -pr "${install_base_folder}/files_etc/swap" "${mountpoint_chroot}/root"
 
 
 # install get iso and grubfix scripts
