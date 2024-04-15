@@ -1,0 +1,291 @@
+#!/bin/bash
+
+# configuration arrays
+copr_repos=(
+"chriscowleyunix/better_fonts"
+"kwizart/fedy"
+"phracek/PyCharm")
+
+dnf_configure=(
+"deltarpm=true"
+"fastestmirror=true"
+"max_parallel_downloads=10"
+"exclude=cheese,libreoffice-*,rhythmbox,unoconv"
+)
+
+declare -A subvolumes=(
+["@home"]="home" \
+["@opt"]="opt" \
+["@root"]="root" \
+["@srv"]="srv" \
+["@var_accounts"]="var/lib/AccountsService" \
+["@var_cache"]="var/cache" \
+["@var_crash"]="var/crash" \
+["@var_gdm"]="var/lib/gdm" \
+["@var_images"]="var/lib/libvirt/images" \
+["@var_log"]="var/log" \
+["@var_mock"]="var/lib/mock"
+["@var_journal"]="var/log/journal" \
+["@var_machines"]="var/lib/machines" \
+["@var_portables"]="var/lib/portables" \
+["@var_spool"]="var/spool" \
+["@var_tmp"]="var/tmp" \
+["@var_www"]="var/www" \
+["@.snapshots"]=".snapshots" \
+)
+
+kernel_parameters=(
+"acpi.prefer_microsoft_guid=1"
+"fbcon=nodefer"
+"iommu=pt"
+"nmi_watchdog=0"
+"pcie_aspm=off"
+"pci=noaer"
+"preempt=full"
+"vt.global_cursor_default=0"
+)
+
+nvidia_kernel=(
+"modprobe.blacklist=nouveau"
+"nvidia-drm.modeset=1"
+"NVreg_PreserveVideoMemoryAllocations=1"
+"NVreg_TemporaryFilePath=/var/tmp"
+"rd.driver.blacklist=nouveau"
+)
+
+snapper_configs=(
+"ALLOW_GROUPS=wheel"
+"SYNC_ACL=yes"
+"TIMELINE_CREATE=yes"
+"TIMELINE_MIN_AGE=1800"
+"NUMBER_LIMIT=30"
+"TIMELINE_LIMIT_HOURLY=7"
+"TIMELINE_LIMIT_DAILY=5"
+"TIMELINE_LIMIT_WEEKLY=0"
+"TIMELINE_LIMIT_MONTHLY=0"
+"TIMELINE_LIMIT_YEARLY=0"
+)
+
+# package arrays
+host_packages=( \
+dialog \
+gdisk \
+hwinfo \
+)
+
+base_packages=( \
+btrfs-progs \
+glibc-all-langpacks \
+glibc-langpack-en \
+grubby \
+kernel \
+langpacks-en \
+polkit \
+tpm2-tools \
+tpm2-tss \
+zstd \
+)
+
+grub_packages=( \
+grub2-common \
+grub2-efi-ia32 \
+grub2-efi-x64 \
+grub2-efi-x64-modules \
+grub2-pc \
+grub2-pc-modules \
+grub2-tools \
+grub2-tools-efi \
+grub2-tools-extra \
+grub2-tools-minimal \
+shim \
+shim-ia32 \
+shim-x64 \
+)
+
+snapper_packages=( \
+python3-dnf-plugin-snapper \
+snapper \
+)
+
+app_packages=( \
+acl \
+acpid \
+aria2 \
+automake \
+bash-completion \
+btop \
+btrfs-assistant \
+bzip2 \
+cabextract \
+celluloid \
+compat-ffmpeg4 \
+compsize \
+cpio \
+cracklib \
+cracklib-dicts \
+cryfs \
+cryptsetup \
+curl \
+darktable \
+dconf \
+dconf-editor \
+dex-autostart \
+dialog \
+diffoscope \
+distrobox \
+dkms \
+dmidecode \
+duf \
+efibootmgr \
+efi-filesystem \
+elfutils-libelf-devel \
+fedy \
+finger \
+fira-code-fonts \
+firewall-config \
+flac \
+flatpak-builder \
+foliate \
+fontconfig \
+fwupd \
+gcc \
+gcc-c++ \
+gedit \
+gimp \
+gimp-help-en_GB \
+gimp-layer-via-copy-cut \
+gimp-resynthesizer \
+git \
+gnome-extensions-app \
+gnome-shell-extension-gpaste \
+gnome-shell-extension-pop-shell \
+gnome-tweaks \
+google-roboto-* \
+gparted \
+gtksourceview3 \
+hadolint \
+handbrake \
+handbrake-gui \
+hddtemp \
+htop \
+hugo \
+hwinfo \
+hyperfine \
+inotify-tools \
+iotop \
+jpegoptim \
+kernel-devel \
+kernel-headers \
+kodi \
+kodi-pvr-hts \
+libavif-tools \
+libglvnd-devel \
+libglvnd-glx \
+libglvnd-opengl \
+libva-utils \
+lm_sensors \
+lshw \
+lzip \
+lzop \
+make \
+mediainfo \
+meld \
+mkvtoolnix \
+mkvtoolnix-gui \
+mock \
+mokutil \
+mozilla-fira* \
+mpv \
+mscore-fonts-all \
+nano \
+neofetch \
+nextcloud-client \
+nvme-cli \
+nvtop \
+openssl \
+optipng \
+p7zip \
+p7zip-plugins \
+paperwork \
+pastebinit \
+pciutils \
+peek \
+pkgconfig \
+podman-compose \
+power-profiles-daemon \
+rawtherapee \
+roboto-fontface-* \
+rpi-imager \
+rsync \
+shellcheck \
+shotwell \
+skanlite \
+sqlitebrowser \
+sushi \
+tar \
+tesseract \
+tigervnc \
+unrar \
+unzip \
+uxplay \
+vim \
+vlc \
+xorg-x11-font-utils \
+xsane \
+xset \
+yamllint \
+yt-dlp \
+)
+
+gaming_packages=( \
+gnome-sudoku \
+goverlay \
+lutris \
+mangohud \
+steam \
+steam-devices \
+supertuxkart \
+unace \
+)
+
+virtualization_packages=( \
+edk2-ovmf \
+guestfs-tools \
+libosinfo \
+libvirt \
+qemu-img \
+qemu-kvm \
+swtpm \
+virt-install \
+virt-manager \
+virt-viewer \
+)
+
+flatpak_packages=( \
+com.bitwarden.desktop \
+com.discordapp.Discord \
+com.github.iwalton3.jellyfin-media-player \
+com.github.tchx84.Flatseal \
+com.mattjakeman.ExtensionManager \
+com.obsproject.Studio \
+com.steamgriddb.steam-rom-manager \
+"flathub org.remmina.Remmina"
+hu.irl.cameractrls \
+im.riot.Riot \
+io.github.flattool.Warehouse \
+io.github.Foldex.AdwSteamGtk \
+io.missioncenter.MissionCenter \
+net.davidotek.pupgui2 \
+net.rpdev.OpenTodoList \
+org.filezillaproject.Filezilla \
+org.gnome.Connections \
+org.gnome.Photos \
+org.gnome.Snapshot \
+org.gnome.World.PikaBackup \
+org.libreoffice.LibreOffice \
+org.mozilla.Thunderbird \
+org.nickvision.tubeconverter \
+org.phoenicis.playonlinux \
+org.raspberrypi.rpi-imager \
+org.signal.Signal \
+)
