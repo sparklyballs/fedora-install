@@ -4,9 +4,6 @@ set -uf -o pipefail
 # import variables from install script
 swap_size=${1}
 
-# set selinux to permissive
-setenforce 0
-
 # configure swap hibernation, if required
 if [[ "$swap_size" = *noswap* ]] ; then
 :
