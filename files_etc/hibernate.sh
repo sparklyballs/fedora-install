@@ -43,6 +43,7 @@ mkswap /swap/swapfile
 cat <<-EOF | tee /etc/dracut.conf.d/resume.conf
 add_dracutmodules+=" resume "
 EOF
+
 dracut -f
 
 swap_uuid=$(findmnt -no UUID -T /swap/swapfile)
@@ -183,3 +184,5 @@ EOF
 systemctl enable suspend-to-hibernate
 
 fi
+
+grub2-mkconfig -o /boot/grub2/grub.cfg
