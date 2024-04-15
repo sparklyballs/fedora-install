@@ -29,16 +29,18 @@ dnf install --best -y \
 install -D -m 0755 -o root "${install_base_folder}/chroot/applications.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/base.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/configure.sh" "${mountpoint_chroot}/root"
-install -D -m 0755 -o root "${install_base_folder}/chroot/setup.sh" "${mountpoint_chroot}/root"
+install -D -m 0755 -o root "${install_base_folder}/chroot/hibernate.sh" "${mountpoint_chroot}/root"
+install -D -m 0755 -o root "${install_base_folder}/chroot/snapset.sh" "${mountpoint_chroot}/root"
+cp -pr "${install_base_folder}/files-etc/swap" "${mountpoint_chroot}/root"
+
 
 # install get iso and grubfix scripts
 install -D -m 0755 -o root "${install_base_folder}/files_etc/get_archiso" "${mountpoint_chroot}/usr/bin"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/get_fediso" "${mountpoint_chroot}/usr/bin"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/grub_fix" "${mountpoint_chroot}/usr/bin"
 
-# install forkboard and hibernate scripts
+# install forkboard script
 install -D -m 0755 -o root "${install_base_folder}/files_etc/forkboard.sh" "${mountpoint_chroot}/root"
-install -D -m 0755 -o root "${install_base_folder}/files_etc/hibernate.sh" "${mountpoint_chroot}/root"
 
 # run chroot scripts
 chroot "${mountpoint_chroot}" /root/base.sh \
@@ -63,7 +65,10 @@ chroot "${mountpoint_chroot}" /root/configure.sh \
 	"${nvidia_kernel[*]}" \
 	"${video_card_manufacturers[*]}"
 
-chroot "${mountpoint_chroot}" /root/setup.sh \
+chroot "${mountpoint_chroot}" /root/hibernate.sh \
+	"${swap_space}"
+
+chroot "${mountpoint_chroot}" /root/snapset.sh \
 	"${snapper_configs[*]}" \
 	"${snapper_packages[*]}"
 
@@ -72,4 +77,7 @@ rm -f \
 "${mountpoint_chroot}/root/applications.sh" \
 "${mountpoint_chroot}/root/base.sh" \
 "${mountpoint_chroot}/root/configure.sh" \
-"${mountpoint_chroot}/root/setup.sh"
+"${mountpoint_chroot}/root/hibernate.sh" \
+"${mountpoint_chroot}/root/snapset.sh"
+
+rm -rf "${mountpoint_chroot}/root/swap"
