@@ -102,6 +102,3 @@ for drv in qemu interface network nodedev nwfilter secret storage; do \
 done
 
 systemctl enable fstrim.timer
-
-# fix selinux
-fixfiles -F onboot
