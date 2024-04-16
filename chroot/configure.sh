@@ -104,4 +104,4 @@ done
 systemctl enable fstrim.timer
 
 # fix selinux
-fixfiles onboot
+fixfiles -F onboot
