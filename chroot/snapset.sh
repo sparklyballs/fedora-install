@@ -1,9 +1,6 @@
 #!/bin/bash
 set -uf -o pipefail
 
-# set selinux to permissive
-setenforce 0
-
 # import variables from install script
 snapper_configs=${1}
 snapper_packages=${2}
