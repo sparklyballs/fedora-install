@@ -9,13 +9,6 @@ if [[ "$swap_size" = *noswap* ]] ; then
 :
 else
 
-# create swapfile
-touch /swap/swapfile
-chattr +C /swap/swapfile
-fallocate --length "${swap_size}G" /swap/swapfile
-chmod 600 /swap/swapfile
-mkswap /swap/swapfile
-
 # configure dracut for resume and regenerate initramfs
 
 cat <<-EOF | tee /etc/dracut.conf.d/resume.conf

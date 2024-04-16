@@ -111,6 +111,17 @@ mount -o "${mount_options},nodatacow,subvol=@var_journal" "/dev/disk/by-partlabe
 mkdir -p "${mountpoint_chroot}/boot/efi"
 mount -o umask=0077,shortname=winnt,nodev,nosuid,noexec "/dev/disk/by-partlabel/${efi_label}" "${mountpoint_chroot}/boot/efi"
 
+# create swapfile
+if [[ "$swap_size" = *noswap* ]] ; then
+:
+else
+touch "${mountpoint_chroot}/swap/swapfile"
+chattr +C "${mountpoint_chroot}/swap/swapfile"
+fallocate --length "${swap_size}G" "${mountpoint_chroot}/swap/swapfile"
+chmod 600 "${mountpoint_chroot}/swap/swapfile"
+mkswap "${mountpoint_chroot}/swap/swapfile"
+fi
+
 # permissions
 chmod 1770  "${mountpoint_chroot}/var/lib/gdm"
 chmod 0775 "${mountpoint_chroot}/var/lib/AccountsService"
