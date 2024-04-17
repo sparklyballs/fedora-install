@@ -26,5 +26,5 @@ echo "$efi_size" > /dev/null 2>&1
 echo "$efi_label" > /dev/null 2>&1
 echo "$btrfs_label" > /dev/null 2>&1
 echo "$mountpoint_chroot" > /dev/null 2>&1
-echo "$mount_options" > /dev/null 2>&1
+echo "$btrfs_mount_options" > /dev/null 2>&1
 echo "$toplevel_mount_options" > /dev/null 2>&1
