@@ -54,6 +54,10 @@ systemctl enable suspend-to-hibernate
 
 fi
 
+# selinux fix for swapfile to survive relabelling so hibernation works
+semanage fcontext -a -t swapfile_t /swap/swapfile
+restorecon -v /swap/swapfile
+
 # regenerate initramfs and grub config
 dracut -f --kver "$(rpm -q kernel | sed 's/^[^-]*-//')"
 grub2-mkconfig -o /boot/grub2/grub.cfg
