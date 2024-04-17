@@ -57,13 +57,13 @@ partprobe -s "${root_device}"
 sleep 3
 
 # format partitions
-mkfs.fat	-F 32	-n "${efi_label}"		/dev/disk/by-partlabel/"${efi_label}"
-mkfs.btrfs	-f	-L "${btrfs_label}"	-n 32k	/dev/disk/by-partlabel/"${btrfs_label}"
+mkfs.fat	-F 32	-n "${efi_label}"		"/dev/disk/by-partlabel/${efi_label}"
+mkfs.btrfs	-f	-L "${btrfs_label}"	-n 32k	"/dev/disk/by-partlabel/${btrfs_label}"
 
 udevadm trigger
 
 # mount btrfs volume
-mount -o clear_cache,nospace_cache /dev/disk/by-partlabel/"${btrfs_label}" "${mountpoint_chroot}"
+mount -o clear_cache,nospace_cache "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}"
 restorecon -RF "${mountpoint_chroot}"
 
 btrfs subvolume create "${mountpoint_chroot}/@"
@@ -98,18 +98,18 @@ if [[ "${dir}" == "@var_journal" ]]; then
 :
 else
 mkdir -p "${mountpoint_chroot}/${subvolumes[$dir]}"
-mount -o "${mount_options}${extra_options},subvol=${dir}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/${subvolumes[$dir]}"
+mount -o "${btrfs_mount_options}${extra_options},subvol=${dir}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/${subvolumes[$dir]}"
 fi
 
 done
 
 # mount /var/log/journal
 mkdir -p "${mountpoint_chroot}/var/log/journal"
-mount -o "${mount_options},nodatacow,subvol=@var_journal" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/var/log/journal"
+mount -o "${btrfs_mount_options},nodatacow,subvol=@var_journal" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/var/log/journal"
 
 # mount efi partition
 mkdir -p "${mountpoint_chroot}/boot/efi"
-mount -o umask=0077,shortname=winnt,nodev,nosuid,noexec "/dev/disk/by-partlabel/${efi_label}" "${mountpoint_chroot}/boot/efi"
+mount -o "${efi_mount_options}" "/dev/disk/by-partlabel/${efi_label}" "${mountpoint_chroot}/boot/efi"
 
 # create swapfile
 if [[ "$swap_size" = *noswap* ]] ; then
@@ -142,11 +142,6 @@ dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" instal
 dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" install --best -y \
 "${base_packages[@]}" \
 "${grub_packages[@]}"
-
-
-# fix grub subvol booting , hopefully
-# sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/10_linux"
-# sed -i.bak 's#rootflags=subvol=${rootsubvol}##g' "${mountpoint_chroot}/etc/grub.d/20_linux_xen"
 
 # copy host resolv conf to our install
 rm -f "${mountpoint_chroot}/etc/resolv.conf"
@@ -183,7 +178,7 @@ printf "%-41s %-24s %-5s %-s %-s\n" \
 	"UUID=${efi_uuid}" \
 	"/boot/efi" \
 	"vfat" \
-	"umask=0077,shortname=winnt,nodev,nosuid,noexec" \
+	"${efi_mount_options}" \
 	"0 2" > "${mountpoint_chroot}/etc/fstab"
 
 printf "%-41s %-24s %-5s %-s %-s\n" \
@@ -201,9 +196,8 @@ printf "%-41s %-24s %-5s %-s %-s\n" \
 	"UUID=${root_uuid}" \
 	"/${subvolumes[$dir]}" \
 	"btrfs" \
-	"${mount_options}${extra_options},subvol=${dir}" \
+	"${btrfs_mount_options}${extra_options},subvol=${dir}" \
 	"0 0" >> "${mountpoint_chroot}/etc/fstab"
 done
 
 sort -k2 -o "${mountpoint_chroot}/etc/fstab" "${mountpoint_chroot}/etc/fstab"
-

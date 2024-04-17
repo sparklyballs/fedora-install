@@ -13,10 +13,13 @@ efi_size="640M"
 efi_label="EFI"
 btrfs_label="FEDORA"
 
-# mount options
+# mount point for installation
 mountpoint_chroot="/mnt/fedora"
+
+# mount options
+btrfs_mount_options="ssd,noatime,space_cache=v2,autodefrag,compress=zstd:3,discard=async"
+efi_mount_options="umask=0077,shortname=winnt,nodev,nosuid,noexec"
 toplevel_mount_options="ssd,noatime,space_cache=v2,compress=zstd:3"
-mount_options="ssd,noatime,space_cache=v2,autodefrag,compress=zstd:3,discard=async"
 
 echo "$fedora_version" > /dev/null 2>&1
 echo "$efi_size" > /dev/null 2>&1

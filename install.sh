@@ -31,7 +31,6 @@ install -D -m 0755 -o root "${install_base_folder}/chroot/base.sh" "${mountpoint
 install -D -m 0755 -o root "${install_base_folder}/chroot/configure.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/hibernate.sh" "${mountpoint_chroot}/root"
 install -D -m 0755 -o root "${install_base_folder}/chroot/snapset.sh" "${mountpoint_chroot}/root"
-cp -pr "${install_base_folder}/files_etc/swap" "${mountpoint_chroot}/root"
 
 
 # install get iso and grubfix scripts
@@ -62,8 +61,23 @@ chroot "${mountpoint_chroot}" /root/configure.sh \
 	"${nvidia_kernel[*]}" \
 	"${video_card_manufacturers[*]}"
 
-chroot "${mountpoint_chroot}" /root/hibernate.sh \
-	"${swap_size}"
+# configure swap hibernation if required
+if [[ "$swap_size" = *noswap* ]] ; then
+:
+else
+mkdir -p \
+	"${mountpoint_chroot}/etc/systemd/system/systemd-logind.service.d" \
+	"${mountpoint_chroot}/etc/systemd/system/systemd-hibernate.service.d"
+install -D -m 0755 -o root "${install_base_folder}/files_etc/swap/swap_offset" "${mountpoint_chroot}/usr/bin"
+install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/hibernate-preparation.service" "${mountpoint_chroot}/etc/systemd/system"
+install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/hibernate-resume.service" "${mountpoint_chroot}/etc/systemd/system"
+install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/override.conf" "${mountpoint_chroot}/etc/systemd/system/systemd-logind.service.d"
+install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/override.conf" "${mountpoint_chroot}/etc/systemd/system/systemd-hibernate.service.d"
+install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/suspend-to-hibernate.service" "${mountpoint_chroot}/etc/systemd/system"
+install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/suspend.target" "${mountpoint_chroot}/etc/systemd/system"
+
+chroot "${mountpoint_chroot}" /root/hibernate.sh
+fi
 
 chroot "${mountpoint_chroot}" /root/snapset.sh \
 	"${snapper_configs[*]}" \
@@ -76,5 +90,3 @@ rm -f \
 "${mountpoint_chroot}/root/configure.sh" \
 "${mountpoint_chroot}/root/hibernate.sh" \
 "${mountpoint_chroot}/root/snapset.sh"
-
-rm -rf "${mountpoint_chroot}/root/swap"
