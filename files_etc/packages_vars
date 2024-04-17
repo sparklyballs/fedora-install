@@ -21,6 +21,7 @@ declare -A subvolumes=(
 ["@var_accounts"]="var/lib/AccountsService" \
 ["@var_cache"]="var/cache" \
 ["@var_crash"]="var/crash" \
+["@var_flatpak"]="var/lib/flatpak" \
 ["@var_gdm"]="var/lib/gdm" \
 ["@var_images"]="var/lib/libvirt/images" \
 ["@var_log"]="var/log" \
