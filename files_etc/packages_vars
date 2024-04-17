@@ -4,7 +4,7 @@
 copr_repos=(
 "chriscowleyunix/better_fonts"
 "kwizart/fedy"
-"phracek/PyCharm")
+)
 
 dnf_configure=(
 "deltarpm=true"

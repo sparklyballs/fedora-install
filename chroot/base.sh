@@ -22,6 +22,9 @@ done
 dnf group install 'Fedora Workstation' -y
 
 # enable repositories
+# fedora 3rd party repos
+/usr/bin/fedora-third-party enable
+
 if [[ "${#video_card_manufacturers_array[@]}" -gt 1 ]] ||  [[ "$motherboard_manufacturer" = *asus* ]] ; then
 copr_repos_array+=( "lukenukem/asus-linux" )
 fi
@@ -31,14 +34,8 @@ dnf copr enable -y "${repo}"
 done
 
 dnf config-manager --add-repo https://dl.winehq.org/wine-builds/fedora/39/winehq.repo
-dnf config-manager --set-enable rpmfusion-nonfree-nvidia-driver
-dnf config-manager --set-enable rpmfusion-nonfree-steam
-dnf config-manager --set-enable google-chrome
 dnf install -y "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedora_version}.noarch.rpm"
 dnf install -y "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${fedora_version}.noarch.rpm"
-
-# enable flathub
-flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 # clean dnf cache
 dnf clean all
