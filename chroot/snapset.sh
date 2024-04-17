@@ -62,6 +62,9 @@ grub2-mkconfig -o /boot/grub2/grub.cfg
 # regenerate initramfs
 dracut -f --kver "$(rpm -q kernel | sed 's/^[^-]*-//')"
 
+# selinux fix
+fixfiles onboot
+
 # enable snapper services
 systemctl enable grub-btrfsd.service
 sed -i 's/OnUnitActiveSec=.*/OnUnitActiveSec=3h/g' /lib/systemd/system/snapper-cleanup.timer
