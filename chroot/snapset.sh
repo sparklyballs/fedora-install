@@ -16,13 +16,12 @@ grub2-editenv - unset menu_auto_hide
 dnf install -y \
 "${snapper_packages_array[@]}"
 
-
-set -ex
 # setup snapper , deleting existing folders and remounting etc.
 umount /.snapshots
 rm -r /.snapshots
 snapper --no-dbus -c root create-config /
 # btrfs subvolume delete /.snapshots
+rm -r /.snapshots
 mkdir /.snapshots
 mount -a
 chmod 750 /.snapshots
