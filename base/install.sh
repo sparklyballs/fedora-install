@@ -36,6 +36,9 @@ case $1 in
 	@var_accounts|@var_cache|@var_crash|@var_gdm|@var_images|@var_log|@var_machines|@var_portables|@var_spool)
         extra_options=",nodatacow,nodev,nosuid,noexec"
         ;;
+        @.snapshots)
+        extra_options=""
+        ;;
         *)
         extra_options=",nodatacow"
         ;;
@@ -77,7 +80,7 @@ fi
 for dir in "${!subvolumes[@]}" ; do
 btrfs subvolume create "${mountpoint_chroot}/${dir}"
 
-if [[ "${dir}" == "@home" ]] || [[ "${dir}" == "@root" ]] ; then
+if [[ "${dir}" == "@home" ]] || [[ "${dir}" == "@root" ]] || [[ "${dir}" == "@.snapshots" ]] ; then
 :
 else
 chattr +C "${mountpoint_chroot}/${dir}"
