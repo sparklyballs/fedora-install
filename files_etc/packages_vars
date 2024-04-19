@@ -14,6 +14,7 @@ dnf_configure=(
 )
 
 declare -A subvolumes=(
+["@/grub"]="boot/grub2" \
 ["@/home"]="home" \
 ["@/opt"]="opt" \
 ["@/root"]="root" \
