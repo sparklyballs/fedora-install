@@ -85,6 +85,7 @@ semanage fcontext -a -t boot_t /boot/efi/EFI/fedora/grub.cfg
 restorecon -v /boot/efi/EFI/fedora/grub.cfg
 
 # fix fedora grub.cfg
-sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
+grep -qF 'set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg || sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
 sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
+# shellcheck disable=SC2016
 sed -i 's#set prefix=.*#set prefix=($dev)/boot/grub2#g' /boot/efi/EFI/fedora/grub.cfg
