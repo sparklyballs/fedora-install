@@ -77,10 +77,14 @@ systemctl enable snapper-cleanup.timer
 rm -f \
 /boot/grub2/grub.cfg \
 /boot/efi/EFI/fedora/grub.cfg \
-/boot/loader/entries/*
+/boot/loader/entries/* \
+/boot/*-rescue-*
+
+kernel-install add "$(rpm -q kernel | sed 's/^[^-]*-//')" "/lib/modules/$(rpm -q kernel | sed 's/^[^-]*-//')/vmlinuz"
+
 dnf reinstall -y \
-kernel-core \
 "${grub_packages_array[@]}"
+
 
 # selinux fixes for grub config files
 semanage fcontext -a -t boot_t /boot/grub2/grub.cfg
