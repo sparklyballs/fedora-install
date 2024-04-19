@@ -12,8 +12,10 @@ IFS=' ' read -r -a snapper_configs_array <<< "$snapper_configs"
 IFS=' ' read -r -a snapper_packages_array <<< "$snapper_packages"
 
 # reinstall packages to rebuild grub and loader entries
+rm -f \
+/boot/grub2/grub.cfg \
+/boot/efi/EFI/fedora/grub.cfg
 dnf reinstall -y \
-kernel-core \
 "${grub_packages_array[@]}"
 
 restorecon -RF /boot
