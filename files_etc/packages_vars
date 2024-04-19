@@ -104,6 +104,9 @@ shim-x64 \
 )
 
 snapper_packages=( \
+gcc \
+make \
+nvme-cli \
 python3-dnf-plugin-snapper \
 snapper \
 )
