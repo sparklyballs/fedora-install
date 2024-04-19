@@ -17,7 +17,7 @@ rm -f \
 /boot/efi/EFI/fedora/grub.cfg
 dnf reinstall -y \
 "${grub_packages_array[@]}"
-
+grubby --update-kernel=ALL --remove-args="rootflags=subvol=@/.snapshots/1/snapshot"
 restorecon -RF /boot
 
 # fix sparse file error
