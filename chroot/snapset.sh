@@ -1,8 +1,6 @@
 #!/bin/bash
 set -uf -o pipefail
 
-setenforce 0
-
 # import variables from install script
 grub_packages=${1}
 snapper_configs=${2}
@@ -67,7 +65,7 @@ grub2-mkconfig -o /boot/grub2/grub.cfg
 dracut -f --kver "$(rpm -q kernel | sed 's/^[^-]*-//')"
 
 # selinux fix
-# fixfiles onboot
+fixfiles onboot
 
 # enable snapper services
 systemctl enable grub-btrfsd.service
