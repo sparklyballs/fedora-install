@@ -80,6 +80,7 @@ chroot "${mountpoint_chroot}" /root/hibernate.sh
 fi
 
 chroot "${mountpoint_chroot}" /root/snapset.sh \
+	"${grub_packages[*]}" \
 	"${snapper_configs[*]}" \
 	"${snapper_packages[*]}"
 
