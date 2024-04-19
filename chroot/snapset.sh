@@ -11,17 +11,6 @@ IFS=' ' read -r -a grub_packages_array <<< "$grub_packages"
 IFS=' ' read -r -a snapper_configs_array <<< "$snapper_configs"
 IFS=' ' read -r -a snapper_packages_array <<< "$snapper_packages"
 
-# reinstall packages to rebuild grub and loader entries
-dnf reinstall -y \
-kernel-core
-"${grub_packages_array[@]}"
-
-# selinux fixes for grub config files
-semanage fcontext -a -t boot_t /boot/grub2/grub.cfg
-restorecon -v /boot/grub2/grub.cfg
-semanage fcontext -a -t boot_t /boot/efi/EFI/fedora/grub.cfg
-restorecon -v /boot/efi/EFI/fedora/grub.cfg
-
 # fix sparse file error
 grub2-editenv - unset menu_auto_hide
 
@@ -83,3 +72,15 @@ systemctl enable grub-btrfsd.service
 sed -i 's/OnUnitActiveSec=.*/OnUnitActiveSec=3h/g' /lib/systemd/system/snapper-cleanup.timer
 systemctl enable snapper-timeline.timer
 systemctl enable snapper-cleanup.timer
+
+# reinstall packages to rebuild grub and loader entries
+dnf reinstall -y \
+kernel-core
+"${grub_packages_array[@]}"
+
+# selinux fixes for grub config files
+semanage fcontext -a -t boot_t /boot/grub2/grub.cfg
+restorecon -v /boot/grub2/grub.cfg
+semanage fcontext -a -t boot_t /boot/efi/EFI/fedora/grub.cfg
+restorecon -v /boot/efi/EFI/fedora/grub.cfg
+
