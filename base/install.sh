@@ -6,9 +6,6 @@ set -euf -o pipefail
 # install_base_folder=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
 . "${install_base_folder}/config.sh"
 
-# make install mountpoint directory
-mkdir -p "${mountpoint_chroot}"
-
 # cleanup old installs
 umount -A --recursive "${mountpoint_chroot}" || :
 
@@ -16,6 +13,9 @@ umount -A --recursive "${mountpoint_chroot}" || :
 . "${install_base_folder}/base/wizard.sh"
 
 clear
+
+# make install mountpoint directory
+mkdir -p "${mountpoint_chroot}"
 
 # define function for subvolume permissions
 subvol_perms() {
