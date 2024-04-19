@@ -2,12 +2,21 @@
 set -uf -o pipefail
 
 # import variables from install script
-snapper_configs=${1}
-snapper_packages=${2}
+grub_packages=${1}
+snapper_configs=${2}
+snapper_packages=${3}
 
 # read variables into arrays
+IFS=' ' read -r -a grub_packages_array <<< "$grub_packages"
 IFS=' ' read -r -a snapper_configs_array <<< "$snapper_configs"
 IFS=' ' read -r -a snapper_packages_array <<< "$snapper_packages"
+
+# reinstall packages to rebuild grub and loader entries
+dnf reinstall -y \
+kernel-core \
+"${grub_packages_array[@]}"
+
+restorecon -RF /boot
 
 # fix sparse file error
 grub2-editenv - unset menu_auto_hide
@@ -70,19 +79,3 @@ systemctl enable grub-btrfsd.service
 sed -i 's/OnUnitActiveSec=.*/OnUnitActiveSec=3h/g' /lib/systemd/system/snapper-cleanup.timer
 systemctl enable snapper-timeline.timer
 systemctl enable snapper-cleanup.timer
-
-# create first snapshot and set as default
-mkdir -v /.snapshots/1
-bash -c "cat > /.snapshots/1/info.xml" <<EOF
-<?xml version="1.0"?>
- <snapshot>
-   <type>single</type>
-   <num>1</num>
-   <date>$(date -u +"%F %T")</date>
-   <description>root subvolume</description>
- </snapshot>
-EOF
-
-btrfs subvolume snapshot / /.snapshots/1/snapshot
-snapshot_id="$(btrfs inspect-internal rootid /.snapshots/1/snapshot)"
-btrfs subvolume set-default "${snapshot_id}" /
