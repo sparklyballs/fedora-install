@@ -5,12 +5,14 @@ set -uf -o pipefail
 copr_repos=${1}
 dnf_configure=${2}
 fedora_version=${3}
-motherboard_manufacturer=${4}
-video_card_manufacturers=${5}
+grub_packages=${4}
+motherboard_manufacturer=${5}
+video_card_manufacturers=${6}
 
 # read variables into arrays
 IFS=' ' read -r -a copr_repos_array <<< "$copr_repos"
 IFS=' ' read -r -a dnf_configure_array <<< "$dnf_configure"
+IFS=' ' read -r -a grub_packages_array <<< "$grub_packages"
 IFS=' ' read -r -a video_card_manufacturers_array <<< "$video_card_manufacturers"
 
 # dnf optimising
@@ -58,7 +60,28 @@ GRUB_ENABLE_BLSCFG=true
 SUSE_BTRFS_SNAPSHOT_BOOTING="true"
 EOF
 
-sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
-sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
-
 grub2-mkconfig -o /boot/grub2/grub.cfg
+
+# reinstall packages to rebuild grub and loader entries
+rm -f \
+/boot/grub2/grub.cfg \
+/boot/efi/EFI/fedora/grub.cfg \
+/boot/loader/entries/* \
+/boot/*-rescue-*
+
+kernel-install add "$(rpm -q kernel | sed 's/^[^-]*-//')" "/lib/modules/$(rpm -q kernel | sed 's/^[^-]*-//')/vmlinuz"
+
+dnf reinstall -y \
+"${grub_packages_array[@]}"
+
+# selinux fixes for grub config files
+semanage fcontext -a -t boot_t /boot/grub2/grub.cfg
+restorecon -v /boot/grub2/grub.cfg
+semanage fcontext -a -t boot_t /boot/efi/EFI/fedora/grub.cfg
+restorecon -v /boot/efi/EFI/fedora/grub.cfg
+
+# fix fedora grub.cfg
+grep -qF 'set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg || sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
+sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
+# shellcheck disable=SC2016
+sed -i 's#set prefix=.*#set prefix=($dev)/boot/grub2#g' /boot/efi/EFI/fedora/grub.cfg

@@ -2,12 +2,10 @@
 set -uf -o pipefail
 
 # import variables from install script
-grub_packages=${1}
-snapper_configs=${2}
-snapper_packages=${3}
+snapper_configs=${1}
+snapper_packages=${2}
 
 # read variables into arrays
-IFS=' ' read -r -a grub_packages_array <<< "$grub_packages"
 IFS=' ' read -r -a snapper_configs_array <<< "$snapper_configs"
 IFS=' ' read -r -a snapper_packages_array <<< "$snapper_packages"
 
@@ -72,28 +70,3 @@ systemctl enable grub-btrfsd.service
 sed -i 's/OnUnitActiveSec=.*/OnUnitActiveSec=3h/g' /lib/systemd/system/snapper-cleanup.timer
 systemctl enable snapper-timeline.timer
 systemctl enable snapper-cleanup.timer
-
-# reinstall packages to rebuild grub and loader entries
-rm -f \
-/boot/grub2/grub.cfg \
-/boot/efi/EFI/fedora/grub.cfg \
-/boot/loader/entries/* \
-/boot/*-rescue-*
-
-kernel-install add "$(rpm -q kernel | sed 's/^[^-]*-//')" "/lib/modules/$(rpm -q kernel | sed 's/^[^-]*-//')/vmlinuz"
-
-dnf reinstall -y \
-"${grub_packages_array[@]}"
-
-
-# selinux fixes for grub config files
-semanage fcontext -a -t boot_t /boot/grub2/grub.cfg
-restorecon -v /boot/grub2/grub.cfg
-semanage fcontext -a -t boot_t /boot/efi/EFI/fedora/grub.cfg
-restorecon -v /boot/efi/EFI/fedora/grub.cfg
-
-# fix fedora grub.cfg
-grep -qF 'set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg || sed -i '1i set btrfs_relative_path="yes"' /boot/efi/EFI/fedora/grub.cfg
-sed -i 's/--root-dev-only//g' /boot/efi/EFI/fedora/grub.cfg
-# shellcheck disable=SC2016
-sed -i 's#set prefix=.*#set prefix=($dev)/boot/grub2#g' /boot/efi/EFI/fedora/grub.cfg

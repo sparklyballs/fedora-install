@@ -43,6 +43,7 @@ chroot "${mountpoint_chroot}" /root/base.sh \
 	"${copr_repos[*]}" \
 	"${dnf_configure[*]}" \
 	"${fedora_version}" \
+	"${grub_packages[*]}" \
 	"${motherboard_manufacturer}" \
 	"${video_card_manufacturers[*]}"
 
@@ -80,7 +81,6 @@ chroot "${mountpoint_chroot}" /root/hibernate.sh
 fi
 
 chroot "${mountpoint_chroot}" /root/snapset.sh \
-	"${grub_packages[*]}" \
 	"${snapper_configs[*]}" \
 	"${snapper_packages[*]}"
 
