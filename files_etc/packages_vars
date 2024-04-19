@@ -14,26 +14,25 @@ dnf_configure=(
 )
 
 declare -A subvolumes=(
-["@/grub"]="boot/grub2" \
-["@/home"]="home" \
-["@/opt"]="opt" \
-["@/root"]="root" \
-["@/srv"]="srv" \
-["@/var_accounts"]="var/lib/AccountsService" \
-["@/var_cache"]="var/cache" \
-["@/var_crash"]="var/crash" \
-["@/var_flatpak"]="var/lib/flatpak" \
-["@/var_gdm"]="var/lib/gdm" \
-["@/var_images"]="var/lib/libvirt/images" \
-["@/var_log"]="var/log" \
-["@/var_mock"]="var/lib/mock"
-["@/var_journal"]="var/log/journal" \
-["@/var_machines"]="var/lib/machines" \
-["@/var_portables"]="var/lib/portables" \
-["@/var_spool"]="var/spool" \
-["@/var_tmp"]="var/tmp" \
-["@/var_www"]="var/www" \
-["@/.snapshots"]=".snapshots" \
+["@home"]="home" \
+["@opt"]="opt" \
+["@root"]="root" \
+["@srv"]="srv" \
+["@var_accounts"]="var/lib/AccountsService" \
+["@var_cache"]="var/cache" \
+["@var_crash"]="var/crash" \
+["@var_flatpak"]="var/lib/flatpak" \
+["@var_gdm"]="var/lib/gdm" \
+["@var_images"]="var/lib/libvirt/images" \
+["@var_log"]="var/log" \
+["@var_mock"]="var/lib/mock"
+["@var_journal"]="var/log/journal" \
+["@var_machines"]="var/lib/machines" \
+["@var_portables"]="var/lib/portables" \
+["@var_spool"]="var/spool" \
+["@var_tmp"]="var/tmp" \
+["@var_www"]="var/www" \
+["@.snapshots"]=".snapshots" \
 )
 
 kernel_parameters=(

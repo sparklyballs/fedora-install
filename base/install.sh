@@ -21,22 +21,22 @@ clear
 subvol_perms() {
 extra_options=""
 case $1 in
-	@/boot)
+	@boot)
 	extra_options=",nodev,nosuid,noexec"
         ;;
-	@/home|@/root)
+	@home|@root)
         extra_options=",nodev,nosuid"
         ;;
-	@/var_journal)
+	@var_journal)
         extra_options=",nodatacow"
         ;;
-	@/var_tmp)
+	@var_tmp)
         extra_options=",nodatacow,nodev,nosuid"
         ;;
-	@/var_accounts|@/var_cache|@/var_crash|@/var_gdm|@/var_images|@/var_log|@/var_machines|@/var_portables|@/var_spool)
+	@var_accounts|@var_cache|@var_crash|@var_gdm|@var_images|@var_log|@var_machines|@var_portables|@var_spool)
         extra_options=",nodatacow,nodev,nosuid,noexec"
         ;;
-        @/.snapshots)
+        @.snapshots)
         extra_options=""
         ;;
         *)
@@ -70,34 +70,34 @@ mount -o clear_cache,nospace_cache "/dev/disk/by-partlabel/${btrfs_label}" "${mo
 restorecon -RF "${mountpoint_chroot}"
 
 btrfs subvolume create "${mountpoint_chroot}/@"
-btrfs subvolume create "${mountpoint_chroot}/@/.snapshots"
-mkdir -p "${mountpoint_chroot}/@/.snapshots/1"
-btrfs subvolume create "${mountpoint_chroot}/@/.snapshots/1/snapshot"
+btrfs subvolume create "${mountpoint_chroot}/@.snapshots"
+mkdir -p "${mountpoint_chroot}/@.snapshots/1"
+btrfs subvolume create "${mountpoint_chroot}/@.snapshots/1/snapshot"
 
 if [[ "$swap_size" = *noswap* ]] ; then
 :
 else
-subvolumes["@/swap"]="swap"
+subvolumes["@swap"]="swap"
 fi
 
 for dir in "${!subvolumes[@]}" ; do
 
-if [[ "${dir}" == "@/.snapshots" ]] ; then
+if [[ "${dir}" == "@.snapshots" ]] ; then
 :
 else
 btrfs subvolume create "${mountpoint_chroot}/${dir}"
 fi
 
-if [[ "${dir}" == "@/home" ]] || [[ "${dir}" == "@/root" ]] || [[ "${dir}" == "@/.snapshots" ]] ; then
+if [[ "${dir}" == "@home" ]] || [[ "${dir}" == "@root" ]] || [[ "${dir}" == "@.snapshots" ]] ; then
 :
 else
 chattr +C "${mountpoint_chroot}/${dir}"
 fi
 done
 
-btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | grep "@/.snapshots/1/snapshot" | grep -oP '(?<=ID )[0-9]+')" "${mountpoint_chroot}"
+btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | grep "@.snapshots/1/snapshot" | grep -oP '(?<=ID )[0-9]+')" "${mountpoint_chroot}"
 
-cat << EOF >> "${mountpoint_chroot}/@/.snapshots/1/info.xml"
+cat << EOF >> "${mountpoint_chroot}/@.snapshots/1/info.xml"
 <?xml version="1.0"?>
 <snapshot>
   <type>single</type>
@@ -108,7 +108,7 @@ cat << EOF >> "${mountpoint_chroot}/@/.snapshots/1/info.xml"
 </snapshot>
 EOF
 
-chmod 600 "${mountpoint_chroot}/@/.snapshots/1/info.xml"
+chmod 600 "${mountpoint_chroot}/@.snapshots/1/info.xml"
 
 # umount btrfs volume
 umount "${mountpoint_chroot}"
@@ -120,7 +120,7 @@ for dir in "${!subvolumes[@]}" ; do
 
 subvol_perms "$dir"
 
-if [[ "${dir}" == "@/var_journal" ]]; then
+if [[ "${dir}" == "@var_journal" ]]; then
 :
 else
 mkdir -p "${mountpoint_chroot}/${subvolumes[$dir]}"
@@ -131,7 +131,7 @@ done
 
 # mount /var/log/journal
 mkdir -p "${mountpoint_chroot}/var/log/journal"
-mount -o "${btrfs_mount_options},nodatacow,subvol=@/var_journal" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/var/log/journal"
+mount -o "${btrfs_mount_options},nodatacow,subvol=@var_journal" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/var/log/journal"
 
 # mount efi partition
 mkdir -p "${mountpoint_chroot}/boot/efi"
