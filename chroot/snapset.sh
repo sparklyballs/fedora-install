@@ -74,6 +74,10 @@ systemctl enable snapper-timeline.timer
 systemctl enable snapper-cleanup.timer
 
 # reinstall packages to rebuild grub and loader entries
+rm -f \
+/boot/grub2/grub.cfg \
+/boot/efi/EFI/fedora/grub.cfg \
+/boot/loader/entries/*
 dnf reinstall -y \
 kernel-core \
 "${grub_packages_array[@]}"
