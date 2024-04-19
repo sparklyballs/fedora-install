@@ -1,6 +1,8 @@
 #!/bin/bash
 set -uf -o pipefail
 
+setenforce 0
+
 # configure dracut for resume and regenerate initramfs
 
 cat <<-EOF | tee /etc/dracut.conf.d/resume.conf

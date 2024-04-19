@@ -3,6 +3,8 @@
 
 [ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
 
+setenforce 0
+
 set -uf -o pipefail
 
 # run config script
