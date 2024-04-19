@@ -17,13 +17,14 @@ dnf install -y \
 "${snapper_packages_array[@]}"
 
 # setup snapper , deleting existing folders and remounting etc.
+set -ex
 umount /.snapshots
 rm -r /.snapshots
 snapper --no-dbus -c root create-config /
-btrfs subvolume delete /.snapshots
-mkdir /.snapshots
-mount -a
+mount -va
 chmod 750 /.snapshots
+
+exit 1
 
 # configure snapper
 for conf in "${snapper_configs_array[@]}" ; do
