@@ -166,7 +166,7 @@ dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" instal
 
 dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" install --best -y \
 "${base_packages[@]}" \
-"${grub_packages[*]}"
+"${grub_packages[@]}"
 
 # copy host resolv conf to our install
 rm -f "${mountpoint_chroot}/etc/resolv.conf"
