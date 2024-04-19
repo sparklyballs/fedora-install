@@ -102,9 +102,8 @@ cat << EOF >> "${mountpoint_chroot}/@.snapshots/1/info.xml"
 <snapshot>
   <type>single</type>
   <num>1</num>
-  <date>1999-03-31 0:00:00</date>
-  <description>First Root Filesystem</description>
-  <cleanup>number</cleanup>
+  <date>$(date -u +"%F %T")</date>
+  <description>root subvolume</description>
 </snapshot>
 EOF
 
