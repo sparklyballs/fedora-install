@@ -75,7 +75,7 @@ systemctl enable snapper-cleanup.timer
 
 # reinstall packages to rebuild grub and loader entries
 dnf reinstall -y \
-kernel-core
+kernel-core \
 "${grub_packages_array[@]}"
 
 # selinux fixes for grub config files
