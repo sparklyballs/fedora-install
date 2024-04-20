@@ -1,0 +1,13 @@
+#!/bin/bash
+
+[ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
+
+swap_offset=$(btrfs inspect-internal map-swapfile -r /swap/swapfile)
+
+if grep -qF "${swap_offset}" /etc/default/grub
+then
+:
+else
+sed -i "s/resume_offset=[0-9]*/resume_offset=${swap_offset}/g" /etc/default/grub
+grub2-mkconfig -o /boot/grub2/grub.cfg
+fi
