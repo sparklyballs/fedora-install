@@ -33,10 +33,12 @@ install -D -m 0755 -o root "${install_base_folder}/chroot/hibernate.sh" "${mount
 install -D -m 0755 -o root "${install_base_folder}/chroot/snapset.sh" "${mountpoint_chroot}/root"
 
 
-# install get iso and grubfix scripts
+# install get iso, grubfix and rescuefix scripts
 install -D -m 0755 -o root "${install_base_folder}/files_etc/get_archiso" "${mountpoint_chroot}/usr/bin"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/get_fediso" "${mountpoint_chroot}/usr/bin"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/grub_fix" "${mountpoint_chroot}/usr/bin"
+install -D -m 0755 -o root "${install_base_folder}/files_etc/swap/rescue_fix" "${mountpoint_chroot}/usr/bin"
+
 
 # run chroot scripts
 chroot "${mountpoint_chroot}" /root/base.sh \

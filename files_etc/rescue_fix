@@ -1,0 +1,6 @@
+#!/bin/bash
+
+[ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
+
+rm -f /boot/*-rescue-*
+kernel-install add $(uname -r) /lib/modules/$(uname -r)/vmlinuz
