@@ -70,9 +70,6 @@ mount -o clear_cache,nospace_cache "/dev/disk/by-partlabel/${btrfs_label}" "${mo
 restorecon -RF "${mountpoint_chroot}"
 
 btrfs subvolume create "${mountpoint_chroot}/@"
-btrfs subvolume create "${mountpoint_chroot}/@.snapshots"
-mkdir -p "${mountpoint_chroot}/@.snapshots/1"
-btrfs subvolume create "${mountpoint_chroot}/@.snapshots/1/snapshot"
 
 if [[ "$swap_size" = *noswap* ]] ; then
 :
@@ -82,11 +79,7 @@ fi
 
 for dir in "${!subvolumes[@]}" ; do
 
-if [[ "${dir}" == "@.snapshots" ]] ; then
-:
-else
 btrfs subvolume create "${mountpoint_chroot}/${dir}"
-fi
 
 if [[ "${dir}" == "@home" ]] || [[ "${dir}" == "@root" ]] || [[ "${dir}" == "@.snapshots" ]] ; then
 :
@@ -95,19 +88,7 @@ chattr +C "${mountpoint_chroot}/${dir}"
 fi
 done
 
-btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | grep "@.snapshots/1/snapshot" | grep -oP '(?<=ID )[0-9]+')" "${mountpoint_chroot}"
-
-cat << EOF >> "${mountpoint_chroot}/@.snapshots/1/info.xml"
-<?xml version="1.0"?>
-<snapshot>
-  <type>single</type>
-  <num>1</num>
-  <date>$(date -u +"%F %T")</date>
-  <description>root subvolume</description>
-</snapshot>
-EOF
-
-chmod 600 "${mountpoint_chroot}/@.snapshots/1/info.xml"
+btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | grep "@$" | grep -oP '(?<=ID )[0-9]+')" "${mountpoint_chroot}"
 
 # umount btrfs volume
 umount "${mountpoint_chroot}"
