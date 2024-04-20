@@ -164,6 +164,7 @@ gnome-extensions-app \
 gnome-shell-extension-gpaste \
 gnome-shell-extension-pop-shell \
 gnome-tweaks \
+grsync \
 google-roboto-* \
 gparted \
 gtksourceview3 \
