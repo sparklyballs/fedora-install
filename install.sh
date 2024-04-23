@@ -49,13 +49,13 @@ chroot "${mountpoint_chroot}" /root/base.sh \
 	"${motherboard_manufacturer}" \
 	"${video_card_manufacturers[*]}"
 
-chroot "${mountpoint_chroot}" /root/applications.sh \
-	"${app_packages[*]}" \
-	"${flatpak_packages[*]}" \
-	"${gaming_packages[*]}" \
-	"${motherboard_manufacturer}" \
-	"${video_card_manufacturers[*]}" \
-	"${virtualization_packages[*]}"
+#chroot "${mountpoint_chroot}" /root/applications.sh \
+#	"${app_packages[*]}" \
+#	"${flatpak_packages[*]}" \
+#	"${gaming_packages[*]}" \
+#	"${motherboard_manufacturer}" \
+#	"${video_card_manufacturers[*]}" \
+#	"${virtualization_packages[*]}"
 
 chroot "${mountpoint_chroot}" /root/configure.sh \
 	"${kernel_parameters[*]}" \
@@ -93,3 +93,7 @@ rm -f \
 "${mountpoint_chroot}/root/configure.sh" \
 "${mountpoint_chroot}/root/hibernate.sh" \
 "${mountpoint_chroot}/root/snapset.sh"
+
+# generate efibootmgr entry if required
+efibootmgr | grep -q "$(blkid "/dev/disk/by-partlabel/${efi_label}" -s PARTUUID -o value)" || \
+efibootmgr -c -d "${root_device}" -p 1 -L Fedora -l "\EFI\fedora\grubx64.efi"
