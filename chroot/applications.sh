@@ -32,7 +32,7 @@ dnf install --allowerasing --best -y \
 dnf install -y \
 "${virtualization_packages_array[@]}"
 
-# install asusctl/envycontrol packages
+# install asus/supergfx packages
 if [[ "$motherboard_manufacturer" = *asus* ]] ; then
 dnf install -y \
 asusctl \
@@ -41,7 +41,8 @@ fi
 
 if [[ "${#video_card_manufacturers_array[@]}" -gt 1 ]] ; then
 dnf install -y \
-python3-envycontrol
+supergfxctl
+systemctl enable supergfxd.service
 fi
 
 # install codecs
