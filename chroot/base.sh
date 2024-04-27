@@ -27,7 +27,11 @@ dnf group install 'Fedora Workstation' -y
 # fedora 3rd party repos
 /usr/bin/fedora-third-party enable
 
-if [[ "${#video_card_manufacturers_array[@]}" -gt 1 ]] ||  [[ "$motherboard_manufacturer" = *asus* ]] ; then
+if [[ "${#video_card_manufacturers_array[@]}" -gt 1 ]]  ; then
+copr_repos_array+=( "sunwire/envycontrol" )
+fi
+
+if [[ "$motherboard_manufacturer" = *asus* ]] ; then
 copr_repos_array+=( "lukenukem/asus-linux" )
 fi
 

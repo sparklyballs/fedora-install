@@ -4,7 +4,6 @@
 copr_repos=(
 "chriscowleyunix/better_fonts"
 "kwizart/fedy"
-"sunwire/envycontrol"
 )
 
 dnf_configure=(
@@ -162,9 +161,9 @@ gnome-extensions-app \
 gnome-shell-extension-gpaste \
 gnome-shell-extension-pop-shell \
 gnome-tweaks \
-grsync \
 google-roboto-* \
 gparted \
+grsync \
 gtksourceview3 \
 hadolint \
 handbrake \
@@ -215,12 +214,14 @@ pciutils \
 peek \
 pkgconfig \
 podman-compose \
+policycoreutils-python-utils \
 power-profiles-daemon \
-python3-envycontrol \
+powertop \
 rawtherapee \
 roboto-fontface-* \
 rpi-imager \
 rsync \
+setroubleshoot-server \
 shellcheck \
 shotwell \
 skanlite \
