@@ -4,6 +4,7 @@
 copr_repos=(
 "chriscowleyunix/better_fonts"
 "kwizart/fedy"
+"sunwire/envycontrol"
 )
 
 dnf_configure=(
@@ -215,6 +216,7 @@ peek \
 pkgconfig \
 podman-compose \
 power-profiles-daemon \
+python3-envycontrol \
 rawtherapee \
 roboto-fontface-* \
 rpi-imager \
