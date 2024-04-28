@@ -17,34 +17,6 @@ clear
 # make install mountpoint directory
 mkdir -p "${mountpoint_chroot}"
 
-# define function for subvolume permissions
-subvol_perms() {
-extra_options=""
-case $1 in
-	@boot)
-	extra_options=",nodev,nosuid,noexec"
-        ;;
-	@home|@root)
-        extra_options=",nodev,nosuid"
-        ;;
-	@var_journal)
-        extra_options=",nodatacow"
-        ;;
-	@var_tmp)
-        extra_options=",nodatacow,nodev,nosuid"
-        ;;
-	@var_accounts|@var_cache|@var_crash|@var_gdm|@var_images|@var_log|@var_machines|@var_portables|@var_spool)
-        extra_options=",nodatacow,nodev,nosuid,noexec"
-        ;;
-        @.snapshots)
-        extra_options=""
-        ;;
-        *)
-        extra_options=",nodatacow"
-        ;;
-esac
-}
-
 # make partitions
 clear
 printf "####################	setting up partitions	####################\n"
@@ -98,13 +70,11 @@ mount -o "${btrfs_mount_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mou
 
 for dir in "${!subvolumes[@]}" ; do
 
-subvol_perms "$dir"
-
 if [[ "${dir}" == "@var_journal" ]]; then
 :
 else
 mkdir -p "${mountpoint_chroot}/${subvolumes[$dir]}"
-mount -o "subvol=${dir},${btrfs_mount_options}${extra_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/${subvolumes[$dir]}"
+mount -o "subvol=${dir},${btrfs_mount_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/${subvolumes[$dir]}"
 fi
 
 done
@@ -197,13 +167,11 @@ printf "%-41s %-${subvol_name_len}s %-5s %-s %-s\n" \
 
 for dir in "${!subvolumes[@]}" ; do
 
-subvol_perms "$dir"
-
 printf "%-41s %-${subvol_name_len}s %-5s %-s %-s\n" \
 	"UUID=${root_uuid}" \
 	"/${subvolumes[$dir]}" \
 	"btrfs" \
-	"subvol=${dir},${btrfs_mount_options}${extra_options}" \
+	"subvol=${dir},${btrfs_mount_options}" \
 	"0 0" >> "${mountpoint_chroot}/etc/fstab"
 done
 
