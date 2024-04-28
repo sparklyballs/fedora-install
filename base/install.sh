@@ -50,15 +50,10 @@ subvolumes["@swap"]="swap"
 fi
 
 for dir in "${!subvolumes[@]}" ; do
-
 btrfs subvolume create "${mountpoint_chroot}/${dir}"
-
-if [[ "${dir}" == "@home" ]] || [[ "${dir}" == "@root" ]] || [[ "${dir}" == "@.snapshots" ]] ; then
-:
-else
-chattr +C "${mountpoint_chroot}/${dir}"
-fi
 done
+
+chattr +C "${mountpoint_chroot}/var/lib/libvirt/images"
 
 btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | grep "@$" | grep -oP '(?<=ID )[0-9]+')" "${mountpoint_chroot}"
 
@@ -70,18 +65,10 @@ mount -o "${btrfs_mount_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mou
 
 for dir in "${!subvolumes[@]}" ; do
 
-if [[ "${dir}" == "@var_journal" ]]; then
-:
-else
 mkdir -p "${mountpoint_chroot}/${subvolumes[$dir]}"
 mount -o "subvol=${dir},${btrfs_mount_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/${subvolumes[$dir]}"
-fi
 
 done
-
-# mount /var/log/journal
-mkdir -p "${mountpoint_chroot}/var/log/journal"
-mount -o "subvol=@var_journal,${btrfs_mount_options},nodatacow" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/var/log/journal"
 
 # mount efi partition
 mkdir -p "${mountpoint_chroot}/boot/efi"

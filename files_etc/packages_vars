@@ -26,7 +26,6 @@ declare -A subvolumes=(
 ["@var_images"]="var/lib/libvirt/images" \
 ["@var_log"]="var/log" \
 ["@var_mock"]="var/lib/mock"
-["@var_journal"]="var/log/journal" \
 ["@var_machines"]="var/lib/machines" \
 ["@var_portables"]="var/lib/portables" \
 ["@var_spool"]="var/spool" \
