@@ -59,7 +59,6 @@ chroot "${mountpoint_chroot}" /root/applications.sh \
 
 chroot "${mountpoint_chroot}" /root/configure.sh \
 	"${kernel_parameters[*]}" \
-	"${max_resolution}" \
 	"${microcode}" \
 	"${nvidia_kernel[*]}" \
 	"${video_card_manufacturers[*]}"

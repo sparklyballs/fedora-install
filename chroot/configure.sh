@@ -3,37 +3,22 @@ set -uf -o pipefail
 
 # import variables from install script
 kernel_parameters=${1}
-max_resolution=${2}
-microcode=${3}
-nvidia_kernel=${4}
-video_card_manufacturers=${5}
+microcode=${2}
+nvidia_kernel=${3}
+video_card_manufacturers=${4}
 
 # read variables into arrays
 IFS=' ' read -r -a kernel_parameters_array <<< "$kernel_parameters"
 IFS=' ' read -r -a nvidia_kernel_array <<< "$nvidia_kernel"
 IFS=' ' read -r -a video_card_manufacturers_array <<< "$video_card_manufacturers"
 
-# configure intel wifi options
+# configure intel wifi powersave
 lsmod | if grep -q -wi "iwlwifi"; then
-cat > /etc/modprobe.d/iwlwifi.conf <<'EOF'
-options iwlmvm power_scheme=2
-# options iwlwifi amsdu_size=2
-# options iwlwifi disable_11ax=1
-# options iwlwifi disable_11be=1
-options iwlwifi power_save=0
-# options iwlwifi swcrypto=0
-# options iwlwifi uapsd_disable=1
-EOF
-cat > /etc/udev/rules.d/81-wifi-powersave.rules <<'EOF'
-ACTION=="add", SUBSYSTEM=="net", KERNEL=="wl*", RUN+="/usr/bin/iw dev $name set power_save off"
-EOF
-fi
-
 cat > /etc/NetworkManager/conf.d/wifi-powersave.conf <<'EOF'
 [connection]
 wifi.powersave = 2
 EOF
-
+fi
 
 # harden network config
 cat > /etc/sysctl.d/90-network.conf <<'EOF'
@@ -58,10 +43,14 @@ net.ipv4.conf.default.send_redirects = 0
 EOF
 
 # install grub theme
-git clone https://github.com/xenlism/grub-themes /tmp/grub-themes || exit
-sed -i 's#/boot/efi/EFI/fedora/grub.cfg#/boot/grub2/grub.cfg#g' "/tmp/grub-themes/xenlism-grub-$max_resolution-Fedora/install.sh"
-cd "/tmp/grub-themes/xenlism-grub-$max_resolution-Fedora" || exit
-./install.sh
+mkdir -p /usr/share/grub/themes/fedora
+curl -o \
+/tmp/theme.tar -L \
+"https://github.com/AdisonCavani/distro-grub-themes/raw/master/themes/fedora.tar"
+tar xf \
+/tmp/theme.tar -C \
+/usr/share/grub/themes/fedora
+grep -qF "/usr/share/grub/themes/fedora/theme.txt" /etc/default/grub || echo -e 'GRUB_THEME="/usr/share/grub/themes/fedora/theme.txt"' >> /etc/default/grub
 
 # configure kernel parameters
 if [[ "${microcode}" = *amd-ucode* ]] ; then \
