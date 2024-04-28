@@ -94,7 +94,7 @@ btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | gre
 umount "${mountpoint_chroot}"
 
 # mount (sub)volumes
-mount -o "${toplevel_mount_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}"
+mount -o "${btrfs_mount_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}"
 
 for dir in "${!subvolumes[@]}" ; do
 
@@ -104,14 +104,14 @@ if [[ "${dir}" == "@var_journal" ]]; then
 :
 else
 mkdir -p "${mountpoint_chroot}/${subvolumes[$dir]}"
-mount -o "${btrfs_mount_options}${extra_options},subvol=${dir}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/${subvolumes[$dir]}"
+mount -o "subvol=${dir},${btrfs_mount_options}${extra_options}" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/${subvolumes[$dir]}"
 fi
 
 done
 
 # mount /var/log/journal
 mkdir -p "${mountpoint_chroot}/var/log/journal"
-mount -o "${btrfs_mount_options},nodatacow,subvol=@var_journal" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/var/log/journal"
+mount -o "subvol=@var_journal,${btrfs_mount_options},nodatacow" "/dev/disk/by-partlabel/${btrfs_label}" "${mountpoint_chroot}/var/log/journal"
 
 # mount efi partition
 mkdir -p "${mountpoint_chroot}/boot/efi"
@@ -180,7 +180,6 @@ EOF
 efi_uuid="$(grub2-probe --target=fs_uuid "${mountpoint_chroot}/boot/efi")"
 root_uuid="$(grub2-probe --target=fs_uuid "${mountpoint_chroot}")"
 subvol_name_len="$(printf '/%s\n' "${subvolumes[@]}" | wc -L)"
-((subvol_name_len+=1))
 
 printf "%-41s %-${subvol_name_len}s %-5s %-s %-s\n" \
 	"UUID=${efi_uuid}" \
@@ -193,7 +192,7 @@ printf "%-41s %-${subvol_name_len}s %-5s %-s %-s\n" \
 	"UUID=${root_uuid}" \
 	"/" \
 	"btrfs" \
-	"${toplevel_mount_options}" \
+	"${btrfs_mount_options}" \
 	"0 0" >> "${mountpoint_chroot}/etc/fstab"
 
 for dir in "${!subvolumes[@]}" ; do
@@ -204,7 +203,7 @@ printf "%-41s %-${subvol_name_len}s %-5s %-s %-s\n" \
 	"UUID=${root_uuid}" \
 	"/${subvolumes[$dir]}" \
 	"btrfs" \
-	"${btrfs_mount_options}${extra_options},subvol=${dir}" \
+	"subvol=${dir},${btrfs_mount_options}${extra_options}" \
 	"0 0" >> "${mountpoint_chroot}/etc/fstab"
 done
 
