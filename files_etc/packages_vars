@@ -103,6 +103,8 @@ shim-x64 \
 )
 
 snapper_packages=( \
+gcc \
+make \
 python3-dnf-plugin-snapper \
 snapper \
 )
@@ -199,7 +201,6 @@ mozilla-fira* \
 mpv \
 mscore-fonts-all \
 nano \
-neofetch \
 nextcloud-client \
 nvme-cli \
 nvtop \
