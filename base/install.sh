@@ -53,8 +53,6 @@ for dir in "${!subvolumes[@]}" ; do
 btrfs subvolume create "${mountpoint_chroot}/${dir}"
 done
 
-chattr +C "${mountpoint_chroot}/var/lib/libvirt/images"
-
 btrfs subvolume set-default "$(btrfs subvolume list "${mountpoint_chroot}" | grep "@$" | grep -oP '(?<=ID )[0-9]+')" "${mountpoint_chroot}"
 
 # umount btrfs volume
@@ -86,6 +84,7 @@ mkswap "${mountpoint_chroot}/swap/swapfile"
 fi
 
 # permissions
+chattr +C "${mountpoint_chroot}/var/lib/libvirt/images"
 chmod 1770  "${mountpoint_chroot}/var/lib/gdm"
 chmod 0775 "${mountpoint_chroot}/var/lib/AccountsService"
 
