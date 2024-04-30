@@ -87,6 +87,7 @@ fi
 chattr +C "${mountpoint_chroot}/var/lib/libvirt/images"
 chmod 1770  "${mountpoint_chroot}/var/lib/gdm"
 chmod 0775 "${mountpoint_chroot}/var/lib/AccountsService"
+chmod 0700 "${mountpoint_chroot}/var/lib/machines"
 
 # install fedora base
 dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" install -y basesystem
