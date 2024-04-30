@@ -178,7 +178,6 @@ zram_slot_size=$((mem_calculated * zram_slot_factor / $(nproc --all)))
 mem_factor=$((zram_slot_factor / $(nproc --all)))
 
 
-printf "[zram%d]\nzram-size = min(ram / $(nproc) , ${zram_slot_size})\n" $(seq 0 "$slots_limit") > "${mountpoint_chroot}/usr/lib/systemd/zram-generator.conf"
-
-
+printf "[zram%d]\nzram-size = min(ram / $(nproc) , ${zram_slot_size})\ncompression-algorithm=zstd\n" $(seq 0 "$slots_limit") > \
+"${mountpoint_chroot}/usr/lib/systemd/zram-generator.conf"
 
