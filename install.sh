@@ -49,13 +49,13 @@ chroot "${mountpoint_chroot}" /root/base.sh \
 	"${motherboard_manufacturer}" \
 	"${video_card_manufacturers[*]}"
 
-chroot "${mountpoint_chroot}" /root/applications.sh \
-	"${app_packages[*]}" \
-	"${flatpak_packages[*]}" \
-	"${gaming_packages[*]}" \
-	"${motherboard_manufacturer}" \
-	"${video_card_manufacturers[*]}" \
-	"${virtualization_packages[*]}"
+#chroot "${mountpoint_chroot}" /root/applications.sh \
+#	"${app_packages[*]}" \
+#	"${flatpak_packages[*]}" \
+#	"${gaming_packages[*]}" \
+#	"${motherboard_manufacturer}" \
+#	"${video_card_manufacturers[*]}" \
+#	"${virtualization_packages[*]}"
 
 chroot "${mountpoint_chroot}" /root/configure.sh \
 	"${kernel_parameters[*]}" \
