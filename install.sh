@@ -67,14 +67,7 @@ chroot "${mountpoint_chroot}" /root/configure.sh \
 if [[ "$swap_size" = *noswap* ]] ; then
 :
 else
-mkdir -p \
-	"${mountpoint_chroot}/etc/systemd/system/systemd-logind.service.d" \
-	"${mountpoint_chroot}/etc/systemd/system/systemd-hibernate.service.d"
 install -D -m 0755 -o root "${install_base_folder}/files_etc/swap/swap_offset" "${mountpoint_chroot}/usr/bin"
-install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/hibernate-preparation.service" "${mountpoint_chroot}/etc/systemd/system"
-install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/hibernate-resume.service" "${mountpoint_chroot}/etc/systemd/system"
-install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/override.conf" "${mountpoint_chroot}/etc/systemd/system/systemd-logind.service.d"
-install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/override.conf" "${mountpoint_chroot}/etc/systemd/system/systemd-hibernate.service.d"
 install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/suspend-to-hibernate.service" "${mountpoint_chroot}/etc/systemd/system"
 install -D -m 0644 -o root "${install_base_folder}/files_etc/swap/suspend.target" "${mountpoint_chroot}/etc/systemd/system"
 
