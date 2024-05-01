@@ -11,10 +11,18 @@ calculate_swap () {
 	(mem_calculated >  2 && mem_calculated <= 8)    * 2 +
 	(mem_calculated >  8 && mem_calculated <= 64)   * 3 +
 	(mem_calculated >  64)				* 4)) in
-	(1) swap_size=$(awk "BEGIN {print ($mem_calculated)*3}");;
-	(2) swap_size=$(awk "BEGIN {print ($mem_calculated)*2}");;
-	(3) swap_size=$(awk "BEGIN {print ($mem_calculated)*1.5}");;
-	(4) swap_size="noswap";;
+	(1) swap_size=$(awk "BEGIN {print ($mem_calculated)*3}")
+	zram_factor="0.25"
+	;;
+	(2) swap_size=$(awk "BEGIN {print ($mem_calculated)*2}")
+	zram_factor="0.375"
+	;;
+	(3) swap_size=$(awk "BEGIN {print ($mem_calculated)*1.5}")
+	zram_factor="0.5"
+	;;
+	(4) swap_size="noswap"
+	zram_factor="0.25"
+	;;
 	esac
 }
 
@@ -135,6 +143,7 @@ dialog_confirm() {
 	fields+=("Microcode:	" "$(( ++i ))"	1	"$microcode"				"$i"	22	"$width" 0 2)
 	fields+=("Root Device:	" "$(( ++i ))"	1	"${root_device}"			"$i"	22	"$width" 0 2)
 	fields+=("Swap (GB):	" "$(( ++i ))"	1	"$swap_size"				"$i"	22	"$width" 0 2)
+	fields+=("Zram Factor:	" "$(( ++i ))"	1	"$zram_factor"				"$i"	22	"$width" 0 2)
 	fields+=("Video Cards:	" "$(( ++i ))"	1	"${video_card_manufacturers[*]}"	"$i"	22	"$width" 0 2)
 	fields+=("Motherboard:	" "$(( ++i ))"	1	"$motherboard_manufacturer"		"$i"	22	"$width" 0 2)
 	fields+=("Resolution:	" "$(( ++i ))"	1	"$max_resolution"			"$i"	22	"$width" 0 2)

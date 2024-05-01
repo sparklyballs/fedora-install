@@ -165,20 +165,8 @@ done
 sort -k2 -o "${mountpoint_chroot}/etc/fstab" "${mountpoint_chroot}/etc/fstab"
 
 # configure zram
-if [ "$mem_calculated" -ge 64 ]; then
-mem_calculated="64"
-fi
+zram_slot_size="$(echo "scale=4 ; x=$zram_factor / $(nproc --all);  if(x<1 && x > 0) print 0; x" | bc -l)"
 
-zram_slot_factor="512"
-if [ "$mem_calculated" -ge 16 ]; then
-zram_slot_factor="256"
-fi
-
-slots_limit=$(($(nproc --all) -1))
-zram_slot_size=$((mem_calculated * zram_slot_factor / $(nproc --all)))
-mem_factor=$((zram_slot_factor / $(nproc --all)))
-
-
-printf "[zram%d]\nzram-size = min(ram / $(nproc) , ${zram_slot_size})\ncompression-algorithm=zstd\n" $(seq 0 "$slots_limit") > \
+printf "[zram%d]\nzram-fraction=$zram_slot_size\ncompression-algorithm=zstd\n" $(seq 0 "$slots_limit") > \
 "${mountpoint_chroot}/usr/lib/systemd/zram-generator.conf"
 
