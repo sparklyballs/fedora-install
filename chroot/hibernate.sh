@@ -20,9 +20,7 @@ sed -i "s#${param}# #g" /etc/default/grub
 grep -qF "${param}" /etc/default/grub || sed -i -e "s#\(GRUB_CMDLINE_LINUX=\"\)#\1${param} #g" /etc/default/grub
 done
 
-# enable services for hibernate and suspend to hibernate
-systemctl enable hibernate-preparation.service
-systemctl enable hibernate-resume.service
+# enable suspend to hibernate
 systemctl enable suspend-to-hibernate
 
 # selinux fix for swapfile to survive relabelling so hibernation works

@@ -164,10 +164,20 @@ done
 
 sort -k2 -o "${mountpoint_chroot}/etc/fstab" "${mountpoint_chroot}/etc/fstab"
 
+if [[ "$swap_size" = *noswap* ]] ; then
+:
+else
+printf "%-41s %-${subvol_name_len}s %-5s %-s %-s\n" \
+	"/swap/swapfile" \
+	"none" \
+	"swap" \
+	"defaults,pri=10" \
+	"0 0" >> "${mountpoint_chroot}/etc/fstab"
+fi
+
 # configure zram
 slots_limit=$(($(nproc --all) -1))
 zram_slot_size="$(echo "scale=4 ; x=$zram_factor / $(nproc --all);  if(x<1 && x > 0) print 0; x" | bc -l)"
 
 printf "[zram%d]\nzram-fraction=$zram_slot_size\ncompression-algorithm=zstd\n" $(seq 0 "$slots_limit") > \
 "${mountpoint_chroot}/usr/lib/systemd/zram-generator.conf"
-
