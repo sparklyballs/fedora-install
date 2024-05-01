@@ -172,7 +172,7 @@ printf "%-41s %-${subvol_name_len}s %-5s %-s %-s\n" \
 	"none" \
 	"swap" \
 	"sw" \
-	"0 0" > "${mountpoint_chroot}/etc/fstab"
+	"0 0" >> "${mountpoint_chroot}/etc/fstab"
 fi
 
 # configure zram
