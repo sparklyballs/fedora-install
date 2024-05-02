@@ -59,6 +59,7 @@ dnf swap -y mesa-va-drivers.i686 mesa-va-drivers-freeworld.i686
 dnf swap -y mesa-vdpau-drivers.i686 mesa-vdpau-drivers-freeworld.i686
 dnf install -y --allowerasing ffmpeg-devel libavcodec-freeworld
 dnf install -y vdpauinfo
+dnf install -y heif-pixbuf-loader libheif-tools
 
 # install nvidia drivers
 if printf '%s\0' "${video_card_manufacturers_array[@]}" | grep -Fxqz -- 'nvidia'; then

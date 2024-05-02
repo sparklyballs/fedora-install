@@ -42,6 +42,9 @@ net.ipv4.conf.all.send_redirects = 0
 net.ipv4.conf.default.send_redirects = 0
 EOF
 
+# stem darkening for fonts
+echo "FREETYPE_PROPERTIES=\"cff:no-stem-darkening=0 autofitter:no-stem-darkening=0\""  | tee -a /etc/enviroment
+
 # install grub theme
 mkdir -p /usr/share/grub/themes/fedora
 curl -o \
