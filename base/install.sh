@@ -98,11 +98,12 @@ for dir in sys dev proc ; do
 	mount --make-rslave "${mountpoint_chroot}/${dir}"
 done
 
-# install minimal environment and tools for chroot
-dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" install --best --setopt=install_weak_deps=False -y \
-@minimal-environment
+# install basesystem , minimal environment and tools for chroot
+dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" install -y \
+basesystem
 
-dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" install --best -y \
+dnf --releasever="${fedora_version}" --installroot="${mountpoint_chroot}" install -y \
+@minimal-environment \
 "${base_packages[@]}" \
 "${grub_packages[@]}"
 
