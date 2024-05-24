@@ -32,8 +32,8 @@ partprobe -s "${root_device}"
 sleep 3
 
 # format partitions
-mkfs.fat	-F 32	-n "${efi_label}"		"/dev/disk/by-partlabel/${efi_label}"
-mkfs.btrfs	-f	-L "${btrfs_label}"	-n 32k	"/dev/disk/by-partlabel/${btrfs_label}"
+mkfs.fat	-F 32	-n "${efi_label}"	"/dev/disk/by-partlabel/${efi_label}"
+mkfs.btrfs	-f	-L "${btrfs_label}"	"/dev/disk/by-partlabel/${btrfs_label}"
 
 udevadm trigger
 
