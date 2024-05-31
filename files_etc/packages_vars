@@ -117,7 +117,10 @@ btop \
 btrfs-assistant \
 bzip2 \
 cabextract \
+cargo \
 celluloid \
+clang-devel \
+cmake \
 compat-ffmpeg4 \
 compsize \
 cpio \
@@ -139,6 +142,7 @@ duf \
 efibootmgr \
 efi-filesystem \
 elfutils-libelf-devel \
+expat-devel \
 fedy \
 finger \
 fira-code-fonts \
@@ -163,6 +167,8 @@ gnome-tweaks \
 google-roboto-* \
 gparted \
 grsync \
+gtk3-devel \
+gtk4-devel \
 gtksourceview3 \
 hadolint \
 handbrake \
@@ -180,10 +186,16 @@ kernel-headers \
 kodi \
 kodi-pvr-hts \
 libavif-tools \
+libdrm-devel \
+libgbm-devel \
 libglvnd-devel \
 libglvnd-glx \
 libglvnd-opengl \
+libinput-devel \
+libseat-devel \
 libva-utils \
+libxkbcommon-devel \
+libzstd-devel \
 lm_sensors \
 lshw \
 lzip \
@@ -209,6 +221,7 @@ p7zip-plugins \
 paperwork \
 pastebinit \
 pciutils \
+pcre2-devel \
 peek \
 pkgconfig \
 podman-compose \
@@ -227,6 +240,7 @@ shotwell \
 skanlite \
 sqlitebrowser \
 sushi \
+systemd-devel \
 tar \
 tesseract \
 tigervnc \
