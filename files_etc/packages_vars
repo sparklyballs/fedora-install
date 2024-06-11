@@ -258,6 +258,7 @@ yt-dlp \
 )
 
 gaming_packages=( \
+gamescope \
 gnome-sudoku \
 goverlay \
 lutris \
@@ -290,11 +291,13 @@ com.heroicgameslauncher.hgl \
 com.mattjakeman.ExtensionManager \
 com.obsproject.Studio \
 com.steamgriddb.steam-rom-manager \
+com.usebottles.bottles \
 "flathub org.remmina.Remmina"
 hu.irl.cameractrls \
 im.riot.Riot \
 io.github.flattool.Warehouse \
 io.github.Foldex.AdwSteamGtk \
+io.github.sharkwouter.Minigalaxy \
 io.missioncenter.MissionCenter \
 net.davidotek.pupgui2 \
 net.rpdev.OpenTodoList \
