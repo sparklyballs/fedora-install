@@ -17,7 +17,7 @@ btrfs_label="FEDORA"
 mountpoint_chroot="/mnt/fedora"
 
 # mount options
-btrfs_mount_options="rw,noatime,compress-force=zstd:1,ssd,space_cache=v2,autodefrag"
+btrfs_mount_options="defaults,noatime,autodefrag,compress=zstd,commit=120"
 efi_mount_options="umask=0077,shortname=winnt"
 
 echo "$fedora_version" > /dev/null 2>&1
