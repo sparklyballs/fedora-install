@@ -54,7 +54,7 @@ grep -qF "/usr/share/grub/themes/fedora/theme.txt" /etc/default/grub || echo -e 
 
 # configure kernel parameters
 if [[ "${microcode}" = *amd-ucode* ]] ; then \
-kernel_parameters_array+=( "amd_pstate=active" )
+kernel_parameters_array+=( "amd_pstate=guided" )
 fi
 
 # sort grub parameters array alphabetically

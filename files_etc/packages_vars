@@ -39,7 +39,6 @@ kernel_parameters=(
 "fbcon=nodefer"
 "iommu=pt"
 "nmi_watchdog=0"
-"pcie_aspm=off"
 "pci=noaer"
 "preempt=full"
 "vt.global_cursor_default=0"
@@ -183,6 +182,7 @@ iotop \
 jpegoptim \
 kernel-devel \
 kernel-headers \
+kernel-tools \
 kodi \
 kodi-pvr-hts \
 libavif-tools \
